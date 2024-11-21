@@ -51,7 +51,7 @@ export default function Command(props: LaunchProps) {
       await bookTime(values, tasks)
       pop()
     },
-    initialValues: props.draftValues || {date: new Date(), isBillable: true},
+    initialValues: {date: new Date(), isBillable: true, ...props.draftValues || props.launchContext},
     validation: {
       projectId: (value) => {
         if ((!value || value === 'none') && values.taskId === 'none') {
