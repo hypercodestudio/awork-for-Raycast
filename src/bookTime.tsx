@@ -1,8 +1,8 @@
 import {Action, ActionPanel, Form, LaunchProps, LocalStorage, useNavigation} from "@raycast/api"
 import {FormValidation, useForm, usePromise} from "@raycast/utils"
 import fetch from "node-fetch"
-import {getToken} from "./composables/WebClient"
 import {getProjects, getTasks, getTypesOfWork, task} from "./composables/fetchData";
+import {getToken} from "./composables/WebClient"
 
 interface FormValues {
   note: string
@@ -14,20 +14,21 @@ interface FormValues {
   duration: string
   isBillable: boolean
 }
+
 const baseURL = 'https://api.awork.com/api/v1'
 
 const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
   values.date = values.date ? values.date : new Date()
-  const task = tasks?.filter((value) => value.id === values.taskId)[0]
+  const task = tasks!.filter((value) => value.id === values.taskId)[0]
   const body = JSON.stringify({
     "note": values.note,
     "timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
     "typeOfWorkId": values.typeOfWorkId,
     "userId": (await LocalStorage.getItem<string>('userId'))?.valueOf(),
-    "projectId": values.projectId || task?.projectId,
-    "taskId": values.taskId ? values.taskId : undefined,
+    "projectId": values.projectId !== 'none' ? values.projectId : task.projectId,
+    "taskId": values.taskId !== 'none' ? values.taskId : undefined,
     "StartDateLocal": `${values.date?.getFullYear()}-${values.date?.getMonth() + 1}-${values.date?.getDate()}`,
-    "StartTimeLocal": values.startTime? values.startTime.includes('now') ? new Date().toLocaleTimeString('de-DE') : values.startTime : undefined,
+    "StartTimeLocal": values.startTime ? values.startTime.includes('now') ? new Date().toLocaleTimeString('de-DE') : values.startTime : undefined,
     "Duration": values.duration,
     "isBillable": values.isBillable
   })
@@ -53,7 +54,7 @@ export default function Command(props: LaunchProps) {
     initialValues: props.draftValues || {date: new Date(), isBillable: true},
     validation: {
       projectId: (value) => {
-        if (!value && !values.taskId) {
+        if ((!value || value === 'none') && values.taskId === 'none') {
           return 'Please select a project'
         }
       },
@@ -61,9 +62,9 @@ export default function Command(props: LaunchProps) {
       date: FormValidation.Required,
       startTime: (value) => {
         if (value) {
-          if (value.match(/^ *(([0-1][0-9])|(2[0-3])):[0-5]\d *$/)){
+          if (value.match(/^ *(([0-1][0-9])|(2[0-3])):[0-5]\d *$/)) {
             return
-          } else if (value.match(/^ *now *$/i)){
+          } else if (value.match(/^ *now *$/i)) {
             return
           }
           return 'Please use format hh:mm'
@@ -83,15 +84,15 @@ export default function Command(props: LaunchProps) {
     >
       <Form.TextField title={'Note'} {...itemProps.note} />
       <Form.Dropdown title={'Project'} {...itemProps.projectId} onChange={(projectId) => {
-        if (projectId){
+        if (projectId) {
           setValue('projectId', projectId)
           const project = projects?.filter((value) => value.id === projectId)[0]
           if (project?.isBillableByDefault) {
             setValue('isBillable', project.isBillableByDefault)
           }
         }
-      }} >
-        <Form.Dropdown.Item key={'none'} title={'No Project'} value={''}/>
+      }}>
+        <Form.Dropdown.Item key={'none'} title={'No Project'} value={'none'}/>
         {projects && projects.map((project) => <Form.Dropdown.Item key={project.id} title={project.name}
                                                                    value={project.id}/>)}
       </Form.Dropdown>
@@ -106,8 +107,8 @@ export default function Command(props: LaunchProps) {
           }
         }
       }}>
-        <Form.Dropdown.Item key={'none'} title={'No Task'} value={''}/>
-        {tasks && tasks.filter((task) => !itemProps.projectId || task.projectId.includes(itemProps.projectId.value || '')).map((task) =>
+        <Form.Dropdown.Item key={'none'} title={'No Task'} value={'none'}/>
+        {tasks && tasks.filter((task) => !itemProps.projectId || itemProps.projectId.value === 'none' || task.projectId.includes(itemProps.projectId.value || '')).map((task) =>
           <Form.Dropdown.Item key={task.id} title={task.name} value={task.id}/>)}
       </Form.Dropdown>
       <Form.Dropdown title={'Type of work'} {...itemProps.typeOfWorkId}>

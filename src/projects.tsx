@@ -1,7 +1,7 @@
 import {Action, ActionPanel, Icon, List, LocalStorage} from '@raycast/api'
-import {logOut} from './composables/WebClient'
 import {usePromise} from '@raycast/utils'
 import {getProjects, project} from "./composables/fetchData";
+import {logOut} from './composables/WebClient'
 
 const Actions = (props: { projectID: string }) => {
   const {data: BaseUrl} = usePromise(() => LocalStorage.getItem<string>('URL'))

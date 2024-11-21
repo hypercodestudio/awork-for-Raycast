@@ -146,7 +146,7 @@ export const getToken = async () => {
   if ((await client.getTokens())?.isExpired()) {
     await refreshToken()
   }
-  if (authorizationInProgress){
+  if (authorizationInProgress) {
     return
   }
   return (await client.getTokens())?.accessToken

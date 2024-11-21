@@ -43,7 +43,7 @@ export const getProjects = async () => {
 }
 
 export const getTasks = async () => {
-  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type ne 'done'`, {
+  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${await getToken()}`,
