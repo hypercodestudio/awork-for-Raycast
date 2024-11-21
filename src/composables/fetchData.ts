@@ -1,5 +1,5 @@
-import fetch from "node-fetch";
-import {getToken} from "./WebClient";
+import fetch from 'node-fetch';
+import {getToken} from './WebClient';
 
 interface company {
   id: string

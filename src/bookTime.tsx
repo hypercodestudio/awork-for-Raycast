@@ -1,8 +1,8 @@
-import {Action, ActionPanel, Form, LaunchProps, LocalStorage, useNavigation} from "@raycast/api"
-import {FormValidation, useForm, usePromise} from "@raycast/utils"
-import fetch from "node-fetch"
-import {getProjects, getTasks, getTypesOfWork, task} from "./composables/fetchData";
-import {getToken} from "./composables/WebClient"
+import {Action, ActionPanel, Form, LaunchProps, LocalStorage, useNavigation} from '@raycast/api'
+import {FormValidation, useForm, usePromise} from '@raycast/utils'
+import fetch from 'node-fetch'
+import {getProjects, getTasks, getTypesOfWork, task} from './composables/fetchData';
+import {getToken} from './composables/WebClient'
 
 interface FormValues {
   note: string
@@ -21,16 +21,16 @@ const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
   values.date = values.date ? values.date : new Date()
   const task = tasks!.filter((value) => value.id === values.taskId)[0]
   const body = JSON.stringify({
-    "note": values.note,
-    "timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
-    "typeOfWorkId": values.typeOfWorkId,
-    "userId": (await LocalStorage.getItem<string>('userId'))?.valueOf(),
-    "projectId": values.projectId !== 'none' ? values.projectId : task.projectId,
-    "taskId": values.taskId !== 'none' ? values.taskId : undefined,
-    "StartDateLocal": `${values.date?.getFullYear()}-${values.date?.getMonth() + 1}-${values.date?.getDate()}`,
-    "StartTimeLocal": values.startTime ? values.startTime.includes('now') ? new Date().toLocaleTimeString('de-DE') : values.startTime : undefined,
-    "Duration": values.duration,
-    "isBillable": values.isBillable
+    'note': values.note,
+    'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+    'typeOfWorkId': values.typeOfWorkId,
+    'userId': (await LocalStorage.getItem<string>('userId'))?.valueOf(),
+    'projectId': values.projectId !== 'none' ? values.projectId : task.projectId,
+    'taskId': values.taskId !== 'none' ? values.taskId : undefined,
+    'StartDateLocal': `${values.date?.getFullYear()}-${values.date?.getMonth() + 1}-${values.date?.getDate()}`,
+    'StartTimeLocal': values.startTime ? values.startTime.includes('now') ? new Date().toLocaleTimeString('de-DE') : values.startTime : undefined,
+    'Duration': values.duration,
+    'isBillable': values.isBillable
   })
   console.log(body)
   await fetch(`${baseURL}/timeentries`, {

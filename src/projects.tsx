@@ -1,6 +1,6 @@
 import {Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage} from '@raycast/api'
 import {usePromise} from '@raycast/utils'
-import {getProjects, project} from "./composables/fetchData";
+import {getProjects, project} from './composables/fetchData';
 import {logOut} from './composables/WebClient'
 
 const Actions = (props: { projectID: string, isBillable: boolean }) => {
@@ -10,7 +10,7 @@ const Actions = (props: { projectID: string, isBillable: boolean }) => {
     <ActionPanel>
       <Action.OpenInBrowser url={`${BaseUrl}/projects/${props.projectID}`}/>
       <Action.CopyToClipboard content={`${BaseUrl}/projects/${props.projectID}`}/>
-      <Action title='Book Time' onAction={async () => {
+      <Action icon={Icon.Clock} title='Book Time' shortcut={{modifiers: ['cmd', 'ctrl'], key: 'enter'}} onAction={async () => {
         await launchCommand({
           name: 'bookTime', type: LaunchType.UserInitiated, context: {
             projectId: props.projectID,
@@ -18,7 +18,7 @@ const Actions = (props: { projectID: string, isBillable: boolean }) => {
           }
         })
       }}/>
-      <Action icon={Icon.Logout} title="Log Out" onAction={logOut} shortcut={{modifiers: ['ctrl'], key: 'x'}}/>
+      <Action icon={Icon.Logout} title='Log Out' onAction={logOut} shortcut={{modifiers: ['ctrl'], key: 'x'}}/>
     </ActionPanel>
   )
 }

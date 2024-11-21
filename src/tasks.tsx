@@ -1,7 +1,7 @@
-import {Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage} from "@raycast/api";
-import {usePromise} from "@raycast/utils";
-import {getTasks, task} from "./composables/fetchData";
-import {logOut} from "./composables/WebClient";
+import {Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage} from '@raycast/api';
+import {usePromise} from '@raycast/utils';
+import {getTasks, task} from './composables/fetchData';
+import {logOut} from './composables/WebClient';
 
 const Actions = (props: { taskId: string, projectId: string, typeOfWorkId: string | undefined }) => {
   const {data: BaseUrl} = usePromise(() => LocalStorage.getItem<string>('URL'))
@@ -10,7 +10,7 @@ const Actions = (props: { taskId: string, projectId: string, typeOfWorkId: strin
     <ActionPanel>
       <Action.OpenInBrowser url={`${BaseUrl}/tasks/${props.taskId}`}/>
       <Action.CopyToClipboard content={`${BaseUrl}/tasks/${props.taskId}`}/>
-      <Action title='Book time' onAction={async () => {
+      <Action icon={Icon.Clock} title='Book time' shortcut={{modifiers: ['ctrl', 'cmd'], key: 'enter'}} onAction={async () => {
         await launchCommand({
           name: 'bookTime', type: LaunchType.UserInitiated, context: {
             taskId: props.taskId,
@@ -19,7 +19,7 @@ const Actions = (props: { taskId: string, projectId: string, typeOfWorkId: strin
           }
         })
       }}/>
-      <Action icon={Icon.Logout} title="Log Out" onAction={logOut} shortcut={{modifiers: ['ctrl'], key: 'x'}}/>
+      <Action icon={Icon.Logout} title='Log Out' onAction={logOut} shortcut={{modifiers: ['ctrl'], key: 'x'}}/>
     </ActionPanel>
   )
 }
