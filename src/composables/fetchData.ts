@@ -17,6 +17,7 @@ export interface task {
   id: string
   name: string
   projectId: string
+  project: project
   typeOfWorkId?: string
 }
 

@@ -28,6 +28,7 @@ const TaskItem = (props: { task: task }) => {
   return (
     <List.Item
       title={props.task.name}
+      subtitle={props.task.project.name}
       actions={<Actions taskId={props.task.id} projectId={props.task.projectId}
                         typeOfWorkId={props.task.typeOfWorkId}/>}
     />

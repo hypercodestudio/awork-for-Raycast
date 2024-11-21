@@ -87,7 +87,7 @@ export default function Command(props: LaunchProps) {
         if (projectId) {
           setValue('projectId', projectId)
           const project = projects?.filter((value) => value.id === projectId)[0]
-          if (project?.isBillableByDefault) {
+          if (typeof project?.isBillableByDefault === 'boolean') {
             setValue('isBillable', project.isBillableByDefault)
           }
         }
