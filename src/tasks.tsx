@@ -19,7 +19,7 @@ const Actions = (props: {
       <Action.CopyToClipboard
         title={'Copy taskId'}
         content={props.taskId}
-        shortcut={{ modifiers: [], key: 'i' }}
+        shortcut={{ modifiers: ['ctrl'], key: 'i' }}
       />
       <Action
         icon={Icon.Clock}
