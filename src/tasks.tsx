@@ -46,7 +46,7 @@ const TaskItem = (props: { task: task }) => {
     <List.Item
       title={props.task.name}
       subtitle={props.task.project.name}
-      keywords={[props.task.project.name]}
+      keywords={[props.task.project.name, props.task.id]}
       actions={
         <Actions
           taskId={props.task.id}
