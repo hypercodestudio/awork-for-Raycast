@@ -179,7 +179,7 @@ export default function Command(props: LaunchProps) {
         <Action.SubmitForm onSubmit={handleSubmit}></Action.SubmitForm>
       </ActionPanel>
     }>
-      <Form.TextField title={'Note'} {...itemProps.note} />
+      <Form.TextField title={'Note'} {...itemProps.note} placeholder="What did you work on?" />
       <Form.Dropdown title={'Project'} {...itemProps.projectId} onChange={(projectId) => {
         setValidationError('projectId', undefined)
         if (projectId) {
@@ -216,12 +216,9 @@ export default function Command(props: LaunchProps) {
           <Form.Dropdown.Item key={typeOfWork.id} title={typeOfWork.name} value={typeOfWork.id} />))}
       </Form.Dropdown>
       <Form.DatePicker type={Form.DatePicker.Type.Date} {...itemProps.date} />
-      <Form.TextField
-        title={'Start time'}
-        {...itemProps.startTime}
-        info={'Format hh:mm'}
-      />
-      <Form.TextField title={'Duration'} {...itemProps.duration} />
+      <Form.TextField title={'Start time'} {...itemProps.startTime} info={'Format hh:mm'}
+                      placeholder={new Date().toLocaleTimeString('de-DE').slice(0, 5)} />
+      <Form.TextField title={'Duration'} {...itemProps.duration} placeholder="1h 30m" />
       <Form.Checkbox {...itemProps.isBillable} label={'Billable'} />
     </Form>
   )
