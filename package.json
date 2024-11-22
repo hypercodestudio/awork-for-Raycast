@@ -4,7 +4,10 @@
   "title": "Awork",
   "description": "",
   "icon": "extension-icon.png",
-  "author": "malte.boettcher",
+  "author": "malte_18",
+  "contributors": [
+    "malte_18"
+  ],
   "license": "MIT",
   "commands": [
     {
@@ -51,12 +54,17 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
     "@raycast/eslint-config": "^1.0.11",
     "@types/node": "20.8.10",
     "@types/react": "18.3.3",
-    "eslint": "^8.57.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.12.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.15.0"
   },
   "scripts": {
     "build": "ray build",

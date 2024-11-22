@@ -1,5 +1,6 @@
-import fetch from 'node-fetch';
-import {getToken} from './WebClient';
+import fetch from 'node-fetch'
+import { getToken } from './WebClient'
+import { showToast } from '@raycast/api'
 
 interface company {
   id: string
@@ -29,46 +30,67 @@ export interface typeOfWork {
 const baseURL = 'https://api.awork.com/api/v1'
 
 export const getProjects = async () => {
+  const token = await getToken()
+  if (!token) {
+    return
+  }
   return fetch(`${baseURL}/projects`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${await getToken()}`,
+      Authorization: `Bearer ${token}`
     },
-    redirect: 'follow',
-  }).then((response) => response.text())
+    redirect: 'follow'
+  })
+    .then((response) => response.text())
     .then((result) => JSON.parse(result) as project[])
-    .catch((e) => {
-      console.error(e)
+    .catch((e: Error) => {
+      showToast({ title: e.name, message: e.message })
+      console.log(e)
       return undefined
     })
 }
 
 export const getTasks = async () => {
-  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${await getToken()}`,
-    },
-    redirect: 'follow',
-  }).then((response) => response.text())
+  const token = await getToken()
+  if (!token) {
+    return
+  }
+  return fetch(
+    `${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      redirect: 'follow'
+    }
+  )
+    .then((response) => response.text())
     .then((result) => JSON.parse(result) as task[])
-    .catch((e) => {
-      console.error(e)
+    .catch((e: Error) => {
+      showToast({ title: e.name, message: e.message })
+      console.log(e)
       return undefined
     })
 }
 
 export const getTypesOfWork = async () => {
+  const token = await getToken()
+  if (!token) {
+    return
+  }
   return fetch(`${baseURL}/typeofwork?OrderBy=name`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${await getToken()}`,
+      Authorization: `Bearer ${token}`
     },
-    redirect: 'follow',
-  }).then((response) => response.text())
+    redirect: 'follow'
+  })
+    .then((response) => response.text())
     .then((result) => JSON.parse(result) as typeOfWork[])
-    .catch((e) => {
-      console.error(e)
+    .catch((e: Error) => {
+      showToast({ title: e.name, message: e.message })
+      console.log(e)
       return undefined
     })
 }

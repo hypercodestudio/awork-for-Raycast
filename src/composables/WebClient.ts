@@ -1,5 +1,5 @@
-import {getPreferenceValues, LocalStorage, OAuth, PreferenceValues} from '@raycast/api'
-import fetch, {RequestInit} from 'node-fetch'
+import { getPreferenceValues, LocalStorage, OAuth, PreferenceValues } from '@raycast/api'
+import fetch, { RequestInit } from 'node-fetch'
 
 interface workspace {
   id: string
@@ -15,14 +15,15 @@ interface User {
 const authorizationURI = 'https://api.awork.com/api/v1/accounts/authorize'
 const tokensURI = 'https://api.awork.com/api/v1/accounts/token'
 export let authorizationInProgress = false
-const encodeBase64 = (str: string) => Buffer.from(str, 'binary').toString('base64')
+const encodeBase64 = (str: string) =>
+  Buffer.from(str, 'binary').toString('base64')
 
 const preferences = getPreferenceValues<PreferenceValues>()
 
 export const client = new OAuth.PKCEClient({
   providerName: 'Awork',
   redirectMethod: OAuth.RedirectMethod.Web,
-  description: 'Connect your Awork account...',
+  description: 'Connect your Awork account...'
 })
 
 export const authorizeClient = async () => {
@@ -41,11 +42,14 @@ export const authorizeClient = async () => {
     endpoint: authorizationURI,
     clientId: preferences.clientId,
     scope: 'offline_access',
-    extraParameters: {clientSecret: preferences.clientSecret},
+    extraParameters: { clientSecret: preferences.clientSecret }
   })
-  const {authorizationCode} = await client.authorize(authRequest)
+  const { authorizationCode } = await client.authorize(authRequest)
   const urlencoded = new URLSearchParams()
-  urlencoded.append('redirect_uri', 'https://raycast.com/redirect?packageName=Extension')
+  urlencoded.append(
+    'redirect_uri',
+    'https://raycast.com/redirect?packageName=Extension'
+  )
   urlencoded.append('grant_type', 'authorization_code')
   urlencoded.append('code', authorizationCode)
 
@@ -53,17 +57,17 @@ export const authorizeClient = async () => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`,
+      Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`
     },
     body: urlencoded,
-    redirect: 'follow',
+    redirect: 'follow'
   }
   await fetch(tokensURI, requestOptions)
     .then((response) => response.text())
     .then((result) => {
       client.setTokens(<OAuth.TokenResponse>JSON.parse(result))
     })
-    .catch((error) => console.error(error))
+    .catch((error: Error) => console.error(error))
   if (await client.getTokens()) {
     console.log('Logged in successfully!')
     await getUserData()
@@ -73,7 +77,6 @@ export const authorizeClient = async () => {
 
 export const refreshToken = async () => {
   const tokens = await client.getTokens()
-
   if (!tokens) {
     return await authorizeClient()
   } else {
@@ -81,7 +84,7 @@ export const refreshToken = async () => {
       return
     }
     authorizationInProgress = true
-    if (tokens.refreshToken == null) {
+    if (!tokens.refreshToken) {
       return
     }
 
@@ -93,18 +96,19 @@ export const refreshToken = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`,
+        Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`
       },
       body: urlencoded,
-      redirect: 'follow',
+      redirect: 'follow'
     }
 
     await fetch(tokensURI, requestOptions)
       .then((response) => response.text())
-      .then((result) => {
-        client.setTokens(<OAuth.TokenResponse>JSON.parse(result))
+      .then(async (result) => {
+        const newTokens = <OAuth.TokenResponse>JSON.parse(result)
+        await client.setTokens(newTokens)
       })
-      .catch((error) => console.error(error))
+      .catch((error: Error) => console.error(error))
 
     if (tokens.accessToken !== (await client.getTokens())?.accessToken) {
       console.log('Refreshed Token')
@@ -116,42 +120,36 @@ export const refreshToken = async () => {
 }
 
 const getUserData = async () => {
-  if (!await client.getTokens())
-    await authorizeClient()
-  if ((await client.getTokens())?.isExpired())
-    await refreshToken()
+  if (!(await client.getTokens())) await authorizeClient()
+  if ((await client.getTokens())?.isExpired()) await refreshToken()
 
   let data: User
 
   await fetch('https://api.awork.com/api/v1/users/me', {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`,
+      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`
     },
-    redirect: 'follow',
+    redirect: 'follow'
   })
     .then((response) => response.text())
     .then(async (result) => {
-      data = (<User>JSON.parse(result))
+      data = <User>JSON.parse(result)
       await LocalStorage.setItem('userId', data.id)
       await LocalStorage.setItem('URL', data.workspace.url)
-    }).catch((e) => console.error(e))
-
+    })
+    .catch((error: Error) => console.error(error))
 }
 
 export const getToken = async () => {
+  if (authorizationInProgress) {
+    return
+  }
   if (!(await client.getTokens())) {
     await authorizeClient()
   }
   if ((await client.getTokens())?.isExpired()) {
     await refreshToken()
   }
-  if (authorizationInProgress) {
-    return
-  }
   return (await client.getTokens())?.accessToken
-}
-
-export const logOut = async () => {
-  await client.removeTokens()
 }
