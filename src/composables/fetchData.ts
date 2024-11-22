@@ -1,6 +1,6 @@
+import { showToast, Toast } from '@raycast/api'
 import fetch from 'node-fetch'
 import { getToken } from './WebClient'
-import { showToast } from '@raycast/api'
 
 interface company {
   id: string
@@ -44,7 +44,7 @@ export const getProjects = async () => {
     .then((response) => response.text())
     .then((result) => JSON.parse(result) as project[])
     .catch((e: Error) => {
-      showToast({ title: e.name, message: e.message })
+      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
       return undefined
     })
@@ -68,7 +68,7 @@ export const getTasks = async () => {
     .then((response) => response.text())
     .then((result) => JSON.parse(result) as task[])
     .catch((e: Error) => {
-      showToast({ title: e.name, message: e.message })
+      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
       return undefined
     })
@@ -89,7 +89,7 @@ export const getTypesOfWork = async () => {
     .then((response) => response.text())
     .then((result) => JSON.parse(result) as typeOfWork[])
     .catch((e: Error) => {
-      showToast({ title: e.name, message: e.message })
+      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
       return undefined
     })

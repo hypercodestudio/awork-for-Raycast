@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Form, LaunchProps, LocalStorage, showToast, useNavigation } from '@raycast/api'
+import { Action, ActionPanel, Form, LaunchProps, LocalStorage, showToast, Toast, useNavigation } from '@raycast/api'
 import { FormValidation, useForm, usePromise } from '@raycast/utils'
 import fetch from 'node-fetch'
 import { getProjects, getTasks, getTypesOfWork, task } from './composables/fetchData'
@@ -46,7 +46,7 @@ const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
     body: body,
     redirect: 'follow'
   }).catch((e: Error) => {
-    showToast({ title: e.name, message: e.message })
+    showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
     console.log(e)
   })
 }
