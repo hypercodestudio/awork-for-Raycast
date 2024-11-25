@@ -44,8 +44,8 @@ export const getProjects = async (searchText: string | undefined) => {
     .then((response) => response.text())
     .then((result) => <Array<project>>JSON.parse(result))
     .catch((e: Error) => {
-      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
-      console.log(e)
+      showToast({ style: Toast.Style.Failure, title: e.name === 'FetchError' ? 'Couldn´t load Projects' : e.name, message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message })
+      console.error(e)
       return undefined
     })
 }
@@ -68,8 +68,8 @@ export const getTasks = async (searchText: string | undefined) => {
     .then((response) => response.text())
     .then((result) => <Array<task>>JSON.parse(result))
     .catch((e: Error) => {
-      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
-      console.log(e)
+      showToast({ style: Toast.Style.Failure, title: e.name === 'FetchError' ? 'Couldn´t load Tasks' : e.name, message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message })
+      console.error(e)
       return undefined
     })
 }
@@ -89,8 +89,8 @@ export const getTypesOfWork = async () => {
     .then((response) => response.text())
     .then((result) => <Array<typeOfWork>>JSON.parse(result))
     .catch((e: Error) => {
-      showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
-      console.log(e)
+      showToast({ style: Toast.Style.Failure, title: e.name === 'FetchError' ? 'Couldn´t load Types of work' : e.name, message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message })
+      console.error(e)
       return undefined
     })
 }

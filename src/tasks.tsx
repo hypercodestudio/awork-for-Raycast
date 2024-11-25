@@ -75,7 +75,6 @@ export default function Command(props: LaunchProps) {
     <List
       isLoading={isLoadingTasks} throttle={true}
       onSearchTextChange={(inputText) => {
-        console.log('New search text: ' + inputText)
         setSearchText(inputText.length > 0 ? inputText : undefined)
         revalidate().then()
       }}
@@ -98,7 +97,6 @@ export default function Command(props: LaunchProps) {
         </List.Dropdown>
       }
     >
-      <List.Item title={tasks?.length ? tasks.length.toString() : 'No Tasks'}/>
       {tasks && Array.isArray(tasks) &&
         tasks
           .filter((value) => value.projectId.includes(projectId))

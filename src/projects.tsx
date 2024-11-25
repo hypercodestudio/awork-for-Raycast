@@ -69,7 +69,6 @@ export default function Command() {
   return (
     <List isLoading={isLoading} throttle={true}
           onSearchTextChange={(inputText) => {
-            console.log('New search text: ' + inputText)
             setSearchText(inputText.length > 0 ? inputText : undefined)
             revalidate().then()
           }}
