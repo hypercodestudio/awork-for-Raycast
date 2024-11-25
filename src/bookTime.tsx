@@ -69,7 +69,7 @@ const validateDuration = (newDuration: string | undefined) => {
   }
   if (
     !newDuration.match(
-      /(^[0-5]?\dm$)|(^\d+h$)|(^\d+h *[0-5]?\dm$)|(^\d+:[0-5]\d$)|(^\d+[,|.]\d+$)/i
+      /(^ *[0-5]?\dm *$)|(^ *\d+h *$)|(^ *\d+h *[0-5]?\dm *$)|(^ *\d+:[0-5]\d *$)|(^ *\d+[,|.]\d+ *$)/i
     )
   ) {
     return 'Please enter valid duration'
@@ -79,30 +79,31 @@ const validateDuration = (newDuration: string | undefined) => {
 
 const convertDurationsToSeconds = (duration: string) => {
   duration = duration.toLowerCase()
-  if (duration.match(/^[0-5]?\dm$/)) {
+  if (duration.match(/^ *[0-5]?\dm *$/)) {
     return Number(duration.slice(0, duration.length - 1)) * 60
-  } else if (duration.match(/(^\d+h$)/)) {
+  } else if (duration.match(/^ *\d+h *$/)) {
     return Number(duration.slice(0, duration.length - 1)) * 60 * 60
-  } else if (duration.match(/(^\d+h *[0-5]?\dm$)/)) {
+  } else if (duration.match(/^ *\d+h *[0-5]?\dm *$/)) {
     const posH = duration.indexOf('h')
     const posM = duration.indexOf('m')
     const hours = Number(duration.slice(0, posH))
     const minutes = Number(duration.slice(posH + 1, posM))
     return hours * 60 * 60 + minutes * 60
-  } else if (duration.match(/(^\d+:[0-5]\d$)/)) {
+  } else if (duration.match(/^ *\d+:[0-5]\d *$/)) {
     const [hours, minutes] = duration.split(':').map((value) => Number(value))
     return hours * 60 * 60 + minutes * 60
-  } else if (duration.match(/(^\d+[,|.]\d+$)/)) {
+  } else if (duration.match(/^ *\d+[,|.]\d+ *$/)) {
     return Number(duration.replace(',', '.')) * 60 * 60
   }
   throw new Error('Unexpected Duration')
 }
 
 export default function Command(props: LaunchProps) {
-  const { data: projects, isLoading: isLoadingProjects } = usePromise(
-    getProjects,
-    [],
-    {
+  const {
+    data: projects,
+    isLoading: isLoadingProjects,
+    revalidate: revalidateProjects
+  } = usePromise(getProjects, [undefined], {
       onData: () => {
         if (props.launchContext?.projectId) {
           setValue('projectId', props.launchContext.projectId)
@@ -110,10 +111,13 @@ export default function Command(props: LaunchProps) {
         if (props.draftValues?.projectId) {
           setValue('projectId', props.draftValues.projectId)
         }
+      },
+      onError: () => {
+        revalidateProjects().then()
       }
     }
   )
-  const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks, [], {
+  const { data: tasks, isLoading: isLoadingTasks, revalidate: revalidateTasks } = usePromise(getTasks, [undefined], {
     onData: () => {
       if (props.launchContext?.taskId) {
         setValue('taskId', props.launchContext.taskId)
@@ -121,12 +125,16 @@ export default function Command(props: LaunchProps) {
       if (props.draftValues?.taskId) {
         setValue('taskId', props.draftValues.taskId)
       }
+    },
+    onError: () => {
+      revalidateTasks().then()
     }
   })
-  const { data: typesOfWork, isLoading: isLoadingTypesOwWork } = usePromise(
-    getTypesOfWork,
-    [],
-    {
+  const {
+    data: typesOfWork,
+    isLoading: isLoadingTypesOwWork,
+    revalidate: revalidateTypesOfWork
+  } = usePromise(getTypesOfWork, [], {
       onData: () => {
         if (props.launchContext?.typeOfWorkId) {
           setValue('typeOfWorkId', props.launchContext.typeOfWorkId)
@@ -134,44 +142,46 @@ export default function Command(props: LaunchProps) {
         if (props.draftValues?.typeOfWorkId) {
           setValue('typeOfWorkId', props.draftValues.typeOfWorkId)
         }
+      },
+      onError: () => {
+        revalidateTypesOfWork().then()
       }
     }
   )
   const { pop } = useNavigation()
 
-  const { handleSubmit, itemProps, setValidationError, setValue, values } =
-    useForm<FormValues>({
-      onSubmit: async (values) => {
-        await bookTime(values, tasks)
-        pop()
+  const { handleSubmit, itemProps, setValidationError, setValue, values } = useForm<FormValues>({
+    onSubmit: async (values) => {
+      await bookTime(values, tasks)
+      pop()
+    },
+    initialValues: {
+      date: new Date(),
+      isBillable: true,
+      ...props.draftValues
+    },
+    validation: {
+      projectId: (value) => {
+        setValidationError('projectId', undefined)
+        if ((!value || value === 'none') && values.taskId === 'none') {
+          return 'Please select a project'
+        }
       },
-      initialValues: {
-        date: new Date(),
-        isBillable: true,
-        ...props.draftValues
-      },
-      validation: {
-        projectId: (value) => {
-          setValidationError('projectId', undefined)
-          if ((!value || value === 'none') && values.taskId === 'none') {
-            return 'Please select a project'
+      typeOfWorkId: FormValidation.Required,
+      date: FormValidation.Required,
+      duration: validateDuration,
+      startTime: (value) => {
+        if (value) {
+          if (value.match(/^ *(([0-1]\d)|(2[0-3])):[0-5]\d *$/)) {
+            return
+          } else if (value.match(/^ *now *$/i)) {
+            return
           }
-        },
-        typeOfWorkId: FormValidation.Required,
-        date: FormValidation.Required,
-        duration: validateDuration,
-        startTime: (value) => {
-          if (value) {
-            if (value.match(/^ *(([0-1]\d)|(2[0-3])):[0-5]\d *$/)) {
-              return
-            } else if (value.match(/^ *now *$/i)) {
-              return
-            }
-            return 'Please use format hh:mm'
-          }
+          return 'Please use format hh:mm'
         }
       }
-    })
+    }
+  })
 
   return (
     <Form enableDrafts={true} isLoading={isLoadingTypesOwWork || isLoadingProjects || isLoadingTasks} actions={

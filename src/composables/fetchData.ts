@@ -11,7 +11,7 @@ export interface project {
   id: string
   name: string
   isBillableByDefault: boolean
-  company: company
+  company?: company
 }
 
 export interface task {
