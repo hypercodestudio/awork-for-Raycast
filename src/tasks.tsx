@@ -73,7 +73,7 @@ export default function Command(props: LaunchProps) {
 
   return (
     <List
-      isLoading={isLoadingTasks} throttle={true}
+      isLoading={isLoadingTasks} throttle
       onSearchTextChange={(inputText) => {
         setSearchText(inputText.length > 0 ? inputText : undefined)
         revalidate().then()

@@ -11,9 +11,10 @@ const Actions = (props: { projectID: string; isBillable: boolean }) => {
   return (
     <ActionPanel>
       <Action.OpenInBrowser url={`${BaseUrl}/projects/${props.projectID}`} />
-      <Action.CopyToClipboard
-        content={`${BaseUrl}/projects/${props.projectID}`}
-      />
+      <Action.CopyToClipboard content={`${BaseUrl}/projects/${props.projectID}`} />
+      <Action.CopyToClipboard icon={Icon.Envelope} title="Copy Project Mail Address"
+                              content={`project-${props.projectID}@hello.awork.com`}
+                              shortcut={{ modifiers: ['ctrl'], key: 'e' }} />
       <Action
         icon={Icon.Clock}
         title="Book Time"
@@ -67,7 +68,7 @@ export default function Command() {
   const { data: projects, isLoading, revalidate } = usePromise(getProjects, [searchText])
 
   return (
-    <List isLoading={isLoading} throttle={true}
+    <List isLoading={isLoading} throttle
           onSearchTextChange={(inputText) => {
             setSearchText(inputText.length > 0 ? inputText : undefined)
             revalidate().then()
