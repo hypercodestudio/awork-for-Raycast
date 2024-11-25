@@ -186,7 +186,7 @@ export default function Command(props: LaunchProps) {
   return (
     <Form enableDrafts={true} isLoading={isLoadingTypesOwWork || isLoadingProjects || isLoadingTasks} actions={
       <ActionPanel>
-        <Action.SubmitForm onSubmit={handleSubmit}></Action.SubmitForm>
+        <Action.SubmitForm onSubmit={handleSubmit} />
       </ActionPanel>
     }>
       <Form.TextField title={'Note'} {...itemProps.note} placeholder="What did you work on?" />
@@ -203,7 +203,7 @@ export default function Command(props: LaunchProps) {
         }
       }}>
         <Form.Dropdown.Item key={'none'} title={'No Project'} value={'none'} />
-        {projects && projects.map((project) => (
+        {projects && Array.isArray(projects) && projects.map((project) => (
           <Form.Dropdown.Item key={project.id} title={project.name} value={project.id} />))}
       </Form.Dropdown>
       <Form.Dropdown title={'Task'} {...itemProps.taskId} onChange={(taskId) => {
@@ -218,11 +218,11 @@ export default function Command(props: LaunchProps) {
         }
       }}>
         <Form.Dropdown.Item key={'none'} title={'No Task'} value={'none'} />
-        {tasks && tasks.filter((task) => !itemProps.projectId || itemProps.projectId.value === 'none' || task.projectId.includes(itemProps.projectId.value || '')).map((task) => (
+        {tasks && Array.isArray(tasks) && tasks.filter((task) => !itemProps.projectId || itemProps.projectId.value === 'none' || task.projectId.includes(itemProps.projectId.value || '')).map((task) => (
           <Form.Dropdown.Item key={task.id} title={task.name} value={task.id} />))}
       </Form.Dropdown>
       <Form.Dropdown title={'Type of work'} {...itemProps.typeOfWorkId}>
-        {typesOfWork && typesOfWork.map((typeOfWork) => (
+        {typesOfWork && Array.isArray(typesOfWork) && typesOfWork.map((typeOfWork) => (
           <Form.Dropdown.Item key={typeOfWork.id} title={typeOfWork.name} value={typeOfWork.id} />))}
       </Form.Dropdown>
       <Form.DatePicker type={Form.DatePicker.Type.Date} {...itemProps.date} />

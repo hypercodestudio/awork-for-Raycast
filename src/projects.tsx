@@ -1,5 +1,6 @@
 import { Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage } from '@raycast/api'
 import { usePromise } from '@raycast/utils'
+import { useState } from 'react'
 import { getProjects, project } from './composables/fetchData'
 
 const Actions = (props: { projectID: string; isBillable: boolean }) => {
@@ -62,11 +63,18 @@ const ProjectItem = (props: { project: project }) => {
 }
 
 export default function Command() {
-  const { data: projects, isLoading } = usePromise(getProjects)
+  const [searchText, setSearchText] = useState<string | undefined>(undefined)
+  const { data: projects, isLoading, revalidate } = usePromise(getProjects, [searchText])
 
   return (
-    <List isLoading={isLoading}>
-      {projects &&
+    <List isLoading={isLoading} throttle={true}
+          onSearchTextChange={(inputText) => {
+            console.log('New search text: ' + inputText)
+            setSearchText(inputText.length > 0 ? inputText : undefined)
+            revalidate().then()
+          }}
+    >
+      {projects && Array.isArray(projects) &&
         projects.map((project) => (
           <ProjectItem key={project.id} project={project} />
         ))}

@@ -59,11 +59,9 @@ const TaskItem = (props: { task: task }) => {
 }
 
 export default function Command(props: LaunchProps) {
-  const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks)
-  const { data: projects, isLoading: iaLoadingProjects } = usePromise(
-    getProjects,
-    [],
-    {
+  const [searchText, setSearchText] = useState<string | undefined>(undefined)
+  const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks, [searchText])
+  const { data: projects, isLoading: iaLoadingProjects, revalidate } = usePromise(getProjects, [undefined], {
       onData: () => {
         if (props.launchContext?.projectId) {
           setProjectId(props.launchContext.projectId)
@@ -75,7 +73,12 @@ export default function Command(props: LaunchProps) {
 
   return (
     <List
-      isLoading={isLoadingTasks}
+      isLoading={isLoadingTasks} throttle={true}
+      onSearchTextChange={(inputText) => {
+        console.log('New search text: ' + inputText)
+        setSearchText(inputText.length > 0 ? inputText : undefined)
+        revalidate().then()
+      }}
       searchBarAccessory={
         <List.Dropdown
           isLoading={iaLoadingProjects}
@@ -83,8 +86,8 @@ export default function Command(props: LaunchProps) {
           value={projectId}
           onChange={(newValue) => setProjectId(newValue)}
         >
-          <List.Dropdown.Item title="All" value="" key={'all'} />
-          {projects &&
+          <List.Dropdown.Item title="All" value="" key="all" />
+          {projects && Array.isArray(projects) &&
             projects.map((project) => (
               <List.Dropdown.Item
                 title={project.name}
@@ -95,7 +98,8 @@ export default function Command(props: LaunchProps) {
         </List.Dropdown>
       }
     >
-      {tasks &&
+      <List.Item title={tasks?.length ? tasks.length.toString() : 'No Tasks'}/>
+      {tasks && Array.isArray(tasks) &&
         tasks
           .filter((value) => value.projectId.includes(projectId))
           .map((task) => <TaskItem key={task.id} task={task} />)}

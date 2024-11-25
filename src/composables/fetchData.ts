@@ -29,12 +29,12 @@ export interface typeOfWork {
 
 const baseURL = 'https://api.awork.com/api/v1'
 
-export const getProjects = async () => {
+export const getProjects = async (searchText: string | undefined) => {
   const token = await getToken()
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/projects`, {
+  return fetch(`${baseURL}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`
@@ -42,7 +42,7 @@ export const getProjects = async () => {
     redirect: 'follow'
   })
     .then((response) => response.text())
-    .then((result) => JSON.parse(result) as project[])
+    .then((result) => <Array<project>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
@@ -50,13 +50,13 @@ export const getProjects = async () => {
     })
 }
 
-export const getTasks = async () => {
+export const getTasks = async (searchText: string | undefined) => {
   const token = await getToken()
   if (!token) {
     return
   }
   return fetch(
-    `${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'`,
+    `${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`,
     {
       method: 'GET',
       headers: {
@@ -66,7 +66,7 @@ export const getTasks = async () => {
     }
   )
     .then((response) => response.text())
-    .then((result) => JSON.parse(result) as task[])
+    .then((result) => <Array<task>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
@@ -87,7 +87,7 @@ export const getTypesOfWork = async () => {
     redirect: 'follow'
   })
     .then((response) => response.text())
-    .then((result) => JSON.parse(result) as typeOfWork[])
+    .then((result) => <Array<typeOfWork>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
       console.log(e)
