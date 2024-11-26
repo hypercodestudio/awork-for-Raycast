@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage } from '@raycast/api'
 import { usePromise } from '@raycast/utils'
 import { useState } from 'react'
-import { getProjects, project } from './composables/fetchData'
+import { getProjects, project } from './composables/FetchData'
 
 const Actions = (props: { projectID: string; isBillable: boolean }) => {
   const { data: BaseUrl } = usePromise(() =>

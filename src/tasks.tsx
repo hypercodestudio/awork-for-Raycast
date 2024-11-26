@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Icon, launchCommand, LaunchProps, LaunchType, List, LocalStorage } from '@raycast/api'
 import { usePromise } from '@raycast/utils'
 import { useState } from 'react'
-import { getProjects, getTasks, task } from './composables/fetchData'
+import { getProjects, getTasks, task } from './composables/FetchData'
 
 const Actions = (props: {
   taskId: string

@@ -15,8 +15,6 @@ interface User {
 const authorizationURI = 'https://api.awork.com/api/v1/accounts/authorize'
 const tokensURI = 'https://api.awork.com/api/v1/accounts/token'
 export let authorizationInProgress = false
-const encodeBase64 = (str: string) =>
-  Buffer.from(str, 'binary').toString('base64')
 
 const preferences = getPreferenceValues<PreferenceValues>()
 
@@ -45,21 +43,21 @@ export const authorizeClient = async () => {
     extraParameters: { clientSecret: preferences.clientSecret }
   })
   const { authorizationCode } = await client.authorize(authRequest)
-  const urlencoded = new URLSearchParams()
-  urlencoded.append(
+  const body = new URLSearchParams()
+  body.append(
     'redirect_uri',
     'https://raycast.com/redirect?packageName=Extension'
   )
-  urlencoded.append('grant_type', 'authorization_code')
-  urlencoded.append('code', authorizationCode)
+  body.append('grant_type', 'authorization_code')
+  body.append('code', authorizationCode)
 
   const requestOptions: RequestInit = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`
+      Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
     },
-    body: urlencoded,
+    body: body,
     redirect: 'follow'
   }
   await fetch(tokensURI, requestOptions)
@@ -88,17 +86,17 @@ export const refreshToken = async () => {
       return
     }
 
-    const urlencoded = new URLSearchParams()
-    urlencoded.append('grant_type', 'refresh_token')
-    urlencoded.append('refresh_token', tokens.refreshToken)
+    const body = new URLSearchParams()
+    body.append('grant_type', 'refresh_token')
+    body.append('refresh_token', tokens.refreshToken)
 
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${encodeBase64(preferences.clientId + ':' + preferences.clientSecret)}`
+        Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
       },
-      body: urlencoded,
+      body: body,
       redirect: 'follow'
     }
 
