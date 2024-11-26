@@ -3,32 +3,30 @@
   "name": "awork",
   "title": "awork",
   "description": "",
-  "icon": "extension-icon.png",
+  "icon": "icon.png",
   "author": "malte_18",
-  "contributors": [
-    "malte_18"
-  ],
+  "categories": ["Productivity"],
   "license": "MIT",
   "commands": [
     {
       "name": "projects",
       "title": "Projects",
       "subtitle": "awork",
-      "description": "",
+      "description": "Search through your projects",
       "mode": "view"
     },
     {
       "name": "tasks",
       "title": "Tasks",
       "subtitle": "awork",
-      "description": "",
+      "description": "Search through your tasks",
       "mode": "view"
     },
     {
       "name": "bookTime",
       "title": "Book Time",
       "subtitle": "awork",
-      "description": "",
+      "description": "Book time on a project or task",
       "mode": "view"
     }
   ],
@@ -38,14 +36,16 @@
       "description": "Enter the Client Id of your workspace",
       "type": "textfield",
       "required": true,
-      "title": "Client ID"
+      "title": "Client ID",
+      "placeholder": ""
     },
     {
       "name": "clientSecret",
       "description": "Enter the Client Secret of your workspace",
       "type": "password",
       "required": true,
-      "title": "Client Secret"
+      "title": "Client Secret",
+      "placeholder": ""
     }
   ],
   "dependencies": {

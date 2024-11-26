@@ -1,4 +1,4 @@
-import { validateDuration, convertDurationsToSeconds } from '../composables/ValidateDuration'
+import { validateDuration, convertDurationsToSeconds } from '../src/composables/ValidateDuration'
 
 describe('validateDuration', () => {
   it('should reject undefined', () => {
