@@ -28,19 +28,20 @@ export interface typeOfWork {
 }
 
 const baseURL = 'https://api.awork.com/api/v1'
+const getRequestOptions = (token: string) => ({
+  method: 'GET',
+  headers: {
+    Authorization: `Bearer ${token}`
+  },
+  redirect: <RequestRedirect>'follow'
+})
 
 export const getProjects = async (searchText: string | undefined) => {
   const token = await getToken()
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    redirect: 'follow'
-  })
+  return fetch(`${baseURL}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`, getRequestOptions(token))
     .then((response) => response.text())
     .then((result) => <Array<project>>JSON.parse(result))
     .catch((e: Error) => {
@@ -59,13 +60,7 @@ export const getTasks = async (searchText: string | undefined) => {
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    redirect: 'follow'
-  })
+  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`, getRequestOptions(token))
     .then((response) => response.text())
     .then((result) => <Array<task>>JSON.parse(result))
     .catch((e: Error) => {
@@ -84,13 +79,7 @@ export const getTypesOfWork = async () => {
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/typeofwork?OrderBy=name`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    redirect: 'follow'
-  })
+  return fetch(`${baseURL}/typeofwork?OrderBy=name`, getRequestOptions(token))
     .then((response) => response.text())
     .then((result) => <Array<typeOfWork>>JSON.parse(result))
     .catch((e: Error) => {

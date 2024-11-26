@@ -29,6 +29,7 @@ interface FormValues {
 const baseURL = 'https://api.awork.com/api/v1'
 
 const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
+  const token = await getToken()
   values.date = values.date ? values.date : new Date()
   const task = tasks!.filter((value) => value.id === values.taskId)[0]
   const body = JSON.stringify({
@@ -52,7 +53,7 @@ const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${await getToken()}`
+      Authorization: `Bearer ${token}`
     },
     body: body,
     redirect: 'follow'

@@ -19,9 +19,19 @@ export let authorizationInProgress = false
 const preferences = getPreferenceValues<PreferenceValues>()
 
 export const client = new OAuth.PKCEClient({
-  providerName: 'Awork',
+  providerName: 'awork',
   redirectMethod: OAuth.RedirectMethod.Web,
-  description: 'Connect your Awork account...'
+  description: 'Connect your awork account...'
+})
+
+const getRequestOptions = (body: URLSearchParams): RequestInit => ({
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
+  },
+  body: body,
+  redirect: 'follow'
 })
 
 export const authorizeClient = async () => {
@@ -51,16 +61,7 @@ export const authorizeClient = async () => {
   body.append('grant_type', 'authorization_code')
   body.append('code', authorizationCode)
 
-  const requestOptions: RequestInit = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
-    },
-    body: body,
-    redirect: 'follow'
-  }
-  await fetch(tokensURI, requestOptions)
+  await fetch(tokensURI, getRequestOptions(body))
     .then((response) => response.text())
     .then((result) => {
       client.setTokens(<OAuth.TokenResponse>JSON.parse(result))
@@ -90,17 +91,7 @@ export const refreshToken = async () => {
     body.append('grant_type', 'refresh_token')
     body.append('refresh_token', tokens.refreshToken)
 
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
-      },
-      body: body,
-      redirect: 'follow'
-    }
-
-    await fetch(tokensURI, requestOptions)
+    await fetch(tokensURI, getRequestOptions(body))
       .then((response) => response.text())
       .then(async (result) => {
         const newTokens = <OAuth.TokenResponse>JSON.parse(result)
