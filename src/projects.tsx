@@ -17,11 +17,11 @@ const Actions = (props: { projectID: string; isBillable: boolean }) => {
                               shortcut={{ modifiers: ['ctrl'], key: 'e' }} />
       <Action
         icon={Icon.Clock}
-        title="Book Time"
+        title="Log Time"
         shortcut={{ modifiers: ['cmd', 'ctrl'], key: 'enter' }}
         onAction={async () => {
           await launchCommand({
-            name: 'bookTime',
+            name: 'logTime',
             type: LaunchType.UserInitiated,
             context: {
               projectId: props.projectID,

@@ -22,8 +22,8 @@ declare namespace Preferences {
   export type Projects = ExtensionPreferences & {}
   /** Preferences accessible in the `tasks` command */
   export type Tasks = ExtensionPreferences & {}
-  /** Preferences accessible in the `bookTime` command */
-  export type BookTime = ExtensionPreferences & {}
+  /** Preferences accessible in the `logTime` command */
+  export type LogTime = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -31,7 +31,7 @@ declare namespace Arguments {
   export type Projects = {}
   /** Arguments passed to the `tasks` command */
   export type Tasks = {}
-  /** Arguments passed to the `bookTime` command */
-  export type BookTime = {}
+  /** Arguments passed to the `logTime` command */
+  export type LogTime = {}
 }
 

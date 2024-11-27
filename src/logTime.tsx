@@ -28,7 +28,7 @@ interface FormValues {
 
 const baseURL = 'https://api.awork.com/api/v1'
 
-const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
+const logTime = async (values: FormValues, tasks: task[] | undefined) => {
   const token = await getToken()
   values.date = values.date ? values.date : new Date()
   const task = tasks!.filter((value) => value.id === values.taskId)[0]
@@ -62,7 +62,7 @@ const bookTime = async (values: FormValues, tasks: task[] | undefined) => {
     console.log(e)
     return
   })
-  await showHUD('Successfully booked time')
+  await showHUD('Successfully logged time')
 }
 
 
@@ -121,7 +121,7 @@ export default function Command(props: LaunchProps) {
 
   const { handleSubmit, itemProps, setValidationError, setValue, values } = useForm<FormValues>({
     onSubmit: async (values) => {
-      await bookTime(values, tasks)
+      await logTime(values, tasks)
       pop()
     },
     initialValues: {

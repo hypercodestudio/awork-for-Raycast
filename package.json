@@ -23,8 +23,8 @@
       "mode": "view"
     },
     {
-      "name": "bookTime",
-      "title": "Book Time",
+      "name": "logTime",
+      "title": "Log Time",
       "subtitle": "awork",
       "description": "Book time on a project or task",
       "mode": "view"

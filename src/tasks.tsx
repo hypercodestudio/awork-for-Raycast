@@ -23,11 +23,11 @@ const Actions = (props: {
       />
       <Action
         icon={Icon.Clock}
-        title="Book time"
+        title="Log time"
         shortcut={{ modifiers: ['ctrl', 'cmd'], key: 'enter' }}
         onAction={async () => {
           await launchCommand({
-            name: 'bookTime',
+            name: 'logTime',
             type: LaunchType.UserInitiated,
             context: {
               taskId: props.taskId,
