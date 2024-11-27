@@ -26,13 +26,13 @@ const Actions = (props: {
       <Action.OpenInBrowser url={`${BaseUrl}/tasks/${props.taskId}`} />
       <Action.CopyToClipboard content={`${BaseUrl}/tasks/${props.taskId}`} />
       <Action.CopyToClipboard
-        title={'Copy taskId'}
+        title={'Copy Task Id'}
         content={props.taskId}
         shortcut={{ modifiers: ['ctrl'], key: 'i' }}
       />
       <Action
         icon={Icon.Clock}
-        title="Log time"
+        title="Log Time"
         shortcut={{ modifiers: ['ctrl', 'cmd'], key: 'enter' }}
         onAction={async () => {
           await launchCommand({
