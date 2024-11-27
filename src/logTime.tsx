@@ -184,6 +184,9 @@ export default function Command(props: LaunchProps) {
           if (task?.typeOfWorkId) {
             setValue('typeOfWorkId', task.typeOfWorkId)
           }
+          if (typeof task?.project.isBillableByDefault === 'boolean') {
+            setValue('isBillable', task.project.isBillableByDefault)
+          }
         }
       }}>
         <Form.Dropdown.Item key={'none'} title={'No Task'} value={'none'} />
