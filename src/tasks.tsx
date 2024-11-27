@@ -1,4 +1,13 @@
-import { Action, ActionPanel, Icon, launchCommand, LaunchProps, LaunchType, List, LocalStorage } from '@raycast/api'
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  launchCommand,
+  LaunchProps,
+  LaunchType,
+  List,
+  LocalStorage,
+} from '@raycast/api'
 import { usePromise } from '@raycast/utils'
 import { useState } from 'react'
 import { getProjects, getTasks, task } from './composables/FetchData'
@@ -9,7 +18,7 @@ const Actions = (props: {
   typeOfWorkId: string | undefined
 }) => {
   const { data: BaseUrl } = usePromise(() =>
-    LocalStorage.getItem<string>('URL')
+    LocalStorage.getItem<string>('URL'),
   )
 
   return (
@@ -32,8 +41,8 @@ const Actions = (props: {
             context: {
               taskId: props.taskId,
               projectId: props.projectId,
-              typeOfWorkId: props.typeOfWorkId
-            }
+              typeOfWorkId: props.typeOfWorkId,
+            },
           })
         }}
       />
@@ -60,20 +69,26 @@ const TaskItem = (props: { task: task }) => {
 
 export default function Command(props: LaunchProps) {
   const [searchText, setSearchText] = useState<string | undefined>(undefined)
-  const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks, [searchText])
-  const { data: projects, isLoading: iaLoadingProjects, revalidate: updateSearch } = usePromise(getProjects, [undefined], {
-      onData: () => {
-        if (props.launchContext?.projectId) {
-          setProjectId(props.launchContext.projectId)
-        }
+  const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks, [
+    searchText,
+  ])
+  const {
+    data: projects,
+    isLoading: iaLoadingProjects,
+    revalidate: updateSearch,
+  } = usePromise(getProjects, [undefined], {
+    onData: () => {
+      if (props.launchContext?.projectId) {
+        setProjectId(props.launchContext.projectId)
       }
-    }
-  )
+    },
+  })
   const [projectId, setProjectId] = useState<string>('')
 
   return (
     <List
-      isLoading={isLoadingTasks} throttle
+      isLoading={isLoadingTasks}
+      throttle
       onSearchTextChange={(inputText) => {
         setSearchText(inputText.length > 0 ? inputText : undefined)
         updateSearch().then()
@@ -86,7 +101,8 @@ export default function Command(props: LaunchProps) {
           onChange={(newValue) => setProjectId(newValue)}
         >
           <List.Dropdown.Item title="All" value="" key="all" />
-          {projects && Array.isArray(projects) &&
+          {projects &&
+            Array.isArray(projects) &&
             projects.map((project) => (
               <List.Dropdown.Item
                 title={project.name}
@@ -97,7 +113,8 @@ export default function Command(props: LaunchProps) {
         </List.Dropdown>
       }
     >
-      {tasks && Array.isArray(tasks) &&
+      {tasks &&
+        Array.isArray(tasks) &&
         tasks
           .filter((value) => value.projectId.includes(projectId))
           .map((task) => <TaskItem key={task.id} task={task} />)}

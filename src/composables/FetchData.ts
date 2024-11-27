@@ -1,6 +1,6 @@
 import { showToast, Toast } from '@raycast/api'
 import fetch from 'node-fetch'
-import { getToken } from './WebClient'
+import { baseURI, getToken } from './WebClient'
 
 interface company {
   id: string
@@ -27,13 +27,12 @@ export interface typeOfWork {
   name: string
 }
 
-const baseURL = 'https://api.awork.com/api/v1'
 const getRequestOptions = (token: string) => ({
   method: 'GET',
   headers: {
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   },
-  redirect: <RequestRedirect>'follow'
+  redirect: <RequestRedirect>'follow',
 })
 
 export const getProjects = async (searchText: string | undefined) => {
@@ -41,14 +40,18 @@ export const getProjects = async (searchText: string | undefined) => {
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`, getRequestOptions(token))
+  return fetch(
+    `${baseURI}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`,
+    getRequestOptions(token),
+  )
     .then((response) => response.text())
     .then((result) => <Array<project>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({
         style: Toast.Style.Failure,
         title: e.name === 'FetchError' ? 'Couldn´t load Projects' : e.name,
-        message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message
+        message:
+          e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
       return undefined
@@ -60,14 +63,18 @@ export const getTasks = async (searchText: string | undefined) => {
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`, getRequestOptions(token))
+  return fetch(
+    `${baseURI}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`,
+    getRequestOptions(token),
+  )
     .then((response) => response.text())
     .then((result) => <Array<task>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({
         style: Toast.Style.Failure,
         title: e.name === 'FetchError' ? 'Couldn´t load Tasks' : e.name,
-        message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message
+        message:
+          e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
       return undefined
@@ -79,14 +86,15 @@ export const getTypesOfWork = async () => {
   if (!token) {
     return
   }
-  return fetch(`${baseURL}/typeofwork?OrderBy=name`, getRequestOptions(token))
+  return fetch(`${baseURI}/typeofwork?OrderBy=name`, getRequestOptions(token))
     .then((response) => response.text())
     .then((result) => <Array<typeOfWork>>JSON.parse(result))
     .catch((e: Error) => {
       showToast({
         style: Toast.Style.Failure,
         title: e.name === 'FetchError' ? 'Couldn´t load Types of work' : e.name,
-        message: e.name === 'FetchError' ? e.name + ': ' + e.message : e.message
+        message:
+          e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
       return undefined

@@ -1,4 +1,9 @@
-import { getPreferenceValues, LocalStorage, OAuth, PreferenceValues } from '@raycast/api'
+import {
+  getPreferenceValues,
+  LocalStorage,
+  OAuth,
+  PreferenceValues,
+} from '@raycast/api'
 import fetch, { RequestInit } from 'node-fetch'
 
 interface workspace {
@@ -12,8 +17,7 @@ interface User {
   workspace: workspace
 }
 
-const authorizationURI = 'https://api.awork.com/api/v1/accounts/authorize'
-const tokensURI = 'https://api.awork.com/api/v1/accounts/token'
+export const baseURI = 'https://api.awork.com/api/v1'
 export let authorizationInProgress = false
 
 const preferences = getPreferenceValues<PreferenceValues>()
@@ -21,17 +25,17 @@ const preferences = getPreferenceValues<PreferenceValues>()
 export const client = new OAuth.PKCEClient({
   providerName: 'awork',
   redirectMethod: OAuth.RedirectMethod.Web,
-  description: 'Connect your awork account...'
+  description: 'Connect your awork account...',
 })
 
 const getRequestOptions = (body: URLSearchParams): RequestInit => ({
   method: 'POST',
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
-    Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`
+    Authorization: `Basic ${btoa(preferences.clientId + ':' + preferences.clientSecret)}`,
   },
   body: body,
-  redirect: 'follow'
+  redirect: 'follow',
 })
 
 export const authorizeClient = async () => {
@@ -47,21 +51,21 @@ export const authorizeClient = async () => {
   authorizationInProgress = true
 
   const authRequest = await client.authorizationRequest({
-    endpoint: authorizationURI,
+    endpoint: `${baseURI}/accounts/authorize`,
     clientId: preferences.clientId,
     scope: 'offline_access',
-    extraParameters: { clientSecret: preferences.clientSecret }
+    extraParameters: { clientSecret: preferences.clientSecret },
   })
   const { authorizationCode } = await client.authorize(authRequest)
   const body = new URLSearchParams()
   body.append(
     'redirect_uri',
-    'https://raycast.com/redirect?packageName=Extension'
+    'https://raycast.com/redirect?packageName=Extension',
   )
   body.append('grant_type', 'authorization_code')
   body.append('code', authorizationCode)
 
-  await fetch(tokensURI, getRequestOptions(body))
+  await fetch(`${baseURI}/accounts/token`, getRequestOptions(body))
     .then((response) => response.text())
     .then((result) => {
       client.setTokens(<OAuth.TokenResponse>JSON.parse(result))
@@ -91,7 +95,7 @@ export const refreshToken = async () => {
     body.append('grant_type', 'refresh_token')
     body.append('refresh_token', tokens.refreshToken)
 
-    await fetch(tokensURI, getRequestOptions(body))
+    await fetch(`${baseURI}/accounts/token`, getRequestOptions(body))
       .then((response) => response.text())
       .then(async (result) => {
         const newTokens = <OAuth.TokenResponse>JSON.parse(result)
@@ -114,12 +118,12 @@ const getUserData = async () => {
 
   let data: User
 
-  await fetch('https://api.awork.com/api/v1/users/me', {
+  await fetch(`${baseURI}/users/me`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`
+      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`,
     },
-    redirect: 'follow'
+    redirect: 'follow',
   })
     .then((response) => response.text())
     .then(async (result) => {

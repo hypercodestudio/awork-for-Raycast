@@ -1,20 +1,33 @@
-import { Action, ActionPanel, Icon, launchCommand, LaunchType, List, LocalStorage } from '@raycast/api'
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  launchCommand,
+  LaunchType,
+  List,
+  LocalStorage,
+} from '@raycast/api'
 import { usePromise } from '@raycast/utils'
 import { useState } from 'react'
 import { getProjects, project } from './composables/FetchData'
 
 const Actions = (props: { projectID: string; isBillable: boolean }) => {
   const { data: BaseUrl } = usePromise(() =>
-    LocalStorage.getItem<string>('URL')
+    LocalStorage.getItem<string>('URL'),
   )
 
   return (
     <ActionPanel>
       <Action.OpenInBrowser url={`${BaseUrl}/projects/${props.projectID}`} />
-      <Action.CopyToClipboard content={`${BaseUrl}/projects/${props.projectID}`} />
-      <Action.CopyToClipboard icon={Icon.Envelope} title="Copy Project Mail Address"
-                              content={`project-${props.projectID}@hello.awork.com`}
-                              shortcut={{ modifiers: ['ctrl'], key: 'e' }} />
+      <Action.CopyToClipboard
+        content={`${BaseUrl}/projects/${props.projectID}`}
+      />
+      <Action.CopyToClipboard
+        icon={Icon.Envelope}
+        title="Copy Project Mail Address"
+        content={`project-${props.projectID}@hello.awork.com`}
+        shortcut={{ modifiers: ['ctrl'], key: 'e' }}
+      />
       <Action
         icon={Icon.Clock}
         title="Log Time"
@@ -25,8 +38,8 @@ const Actions = (props: { projectID: string; isBillable: boolean }) => {
             type: LaunchType.UserInitiated,
             context: {
               projectId: props.projectID,
-              isBillable: props.isBillable
-            }
+              isBillable: props.isBillable,
+            },
           })
         }}
       />
@@ -39,8 +52,8 @@ const Actions = (props: { projectID: string; isBillable: boolean }) => {
             name: 'tasks',
             type: LaunchType.UserInitiated,
             context: {
-              projectId: props.projectID
-            }
+              projectId: props.projectID,
+            },
           })
         }}
       />
@@ -65,16 +78,23 @@ const ProjectItem = (props: { project: project }) => {
 
 export default function Command() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined)
-  const { data: projects, isLoading, revalidate: updateSearch } = usePromise(getProjects, [searchText])
+  const {
+    data: projects,
+    isLoading,
+    revalidate: updateSearch,
+  } = usePromise(getProjects, [searchText])
 
   return (
-    <List isLoading={isLoading} throttle
-          onSearchTextChange={(inputText) => {
-            setSearchText(inputText.length > 0 ? inputText : undefined)
-            updateSearch().then()
-          }}
+    <List
+      isLoading={isLoading}
+      throttle
+      onSearchTextChange={(inputText) => {
+        setSearchText(inputText.length > 0 ? inputText : undefined)
+        updateSearch().then()
+      }}
     >
-      {projects && Array.isArray(projects) &&
+      {projects &&
+        Array.isArray(projects) &&
         projects.map((project) => (
           <ProjectItem key={project.id} project={project} />
         ))}
