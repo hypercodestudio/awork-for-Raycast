@@ -65,13 +65,13 @@ const ProjectItem = (props: { project: project }) => {
 
 export default function Command() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined)
-  const { data: projects, isLoading, revalidate } = usePromise(getProjects, [searchText])
+  const { data: projects, isLoading, revalidate: updateSearch } = usePromise(getProjects, [searchText])
 
   return (
     <List isLoading={isLoading} throttle
           onSearchTextChange={(inputText) => {
             setSearchText(inputText.length > 0 ? inputText : undefined)
-            revalidate().then()
+            updateSearch().then()
           }}
     >
       {projects && Array.isArray(projects) &&

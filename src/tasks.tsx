@@ -61,7 +61,7 @@ const TaskItem = (props: { task: task }) => {
 export default function Command(props: LaunchProps) {
   const [searchText, setSearchText] = useState<string | undefined>(undefined)
   const { data: tasks, isLoading: isLoadingTasks } = usePromise(getTasks, [searchText])
-  const { data: projects, isLoading: iaLoadingProjects, revalidate } = usePromise(getProjects, [undefined], {
+  const { data: projects, isLoading: iaLoadingProjects, revalidate: updateSearch } = usePromise(getProjects, [undefined], {
       onData: () => {
         if (props.launchContext?.projectId) {
           setProjectId(props.launchContext.projectId)
@@ -76,7 +76,7 @@ export default function Command(props: LaunchProps) {
       isLoading={isLoadingTasks} throttle
       onSearchTextChange={(inputText) => {
         setSearchText(inputText.length > 0 ? inputText : undefined)
-        revalidate().then()
+        updateSearch().then()
       }}
       searchBarAccessory={
         <List.Dropdown
