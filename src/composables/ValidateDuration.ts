@@ -4,7 +4,7 @@ export const validateDuration = (newDuration: string | undefined) => {
   }
   if (
     !newDuration.match(
-      /(^ *([1-5]\d|[1-9])m *$)|(^ *\d*[1-9]\d*h *$)|(^ *\d*[1-9]\d*h *[0-5]?\dm *$)|(^ *\d*[1-9]\d*:[0-5]\d *$)|(^ *\d+:([1-5]\d|0[1-9]) *$)|(^ *\d*[1-9]\d*[,|.]\d+ *$)|(^ *\d+[,|.]\d*[1-9]\d* *$)/i,
+      /(^ *([1-5]\d|[1-9])m *$)|(^ *\d*[1-9]\d*h *$)|(^ *\d*[1-9]\d*h *[0-5]?\dm *$)|(^ *\d*[1-9]\d*:[0-5]\d *$)|(^ *\d+:([1-5]\d|0[1-9]) *$)|(^ *\d*[1-9]\d*[,|.]\d+ *$)|(^ *\d+[,|.]\d*[1-9]\d*h? *$)/i,
     )
   ) {
     return 'Please enter valid duration'
@@ -27,8 +27,8 @@ export const convertDurationsToSeconds = (duration: string) => {
   } else if (duration.match(/^ *\d+:[0-5]\d *$/)) {
     const [hours, minutes] = duration.split(':').map((value) => Number(value))
     return hours * 60 * 60 + minutes * 60
-  } else if (duration.match(/^ *\d+[,|.]\d+ *$/)) {
-    return Number(duration.replace(',', '.')) * 60 * 60
+  } else if (duration.match(/^ *\d+[,|.]\d+h? *$/)) {
+    return Number(duration.replace(',', '.').replace('h', '')) * 60 * 60
   }
   throw new Error('Unexpected Duration')
 }

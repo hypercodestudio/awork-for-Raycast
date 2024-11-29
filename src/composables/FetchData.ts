@@ -41,7 +41,9 @@ export const getProjects = async (searchText: string | undefined) => {
     return
   }
   return fetch(
-    `${baseURI}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`,
+    new URL(
+      `${baseURI}/projects${searchText ? `?filterby=substringof('${searchText}',name)` : ''}`,
+    ),
     getRequestOptions(token),
   )
     .then((response) => response.text())
@@ -64,7 +66,9 @@ export const getTasks = async (searchText: string | undefined) => {
     return
   }
   return fetch(
-    `${baseURI}/me/projecttasks?filterby=taskstatus/type%20ne%20'done'${searchText ? `%20and%20(substringof('${searchText}',name)%20or%20substringof('${searchText}',project/name))` : ''}`,
+    new URL(
+      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))` : ''}`,
+    ),
     getRequestOptions(token),
   )
     .then((response) => response.text())
