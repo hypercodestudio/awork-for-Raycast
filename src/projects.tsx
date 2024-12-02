@@ -82,7 +82,13 @@ export default function Command() {
     data: projects,
     isLoading,
     revalidate: updateSearch,
-  } = usePromise(getProjects, [searchText])
+  } = usePromise(getProjects, [searchText], {
+    onData: (data) => {
+      if (!data) {
+        updateSearch()
+      }
+    },
+  })
 
   return (
     <List
@@ -90,7 +96,7 @@ export default function Command() {
       throttle
       onSearchTextChange={(inputText) => {
         setSearchText(inputText.length > 0 ? inputText : undefined)
-        updateSearch().then()
+        updateSearch()
       }}
     >
       {projects &&

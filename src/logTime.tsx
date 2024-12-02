@@ -77,7 +77,10 @@ export default function Command(props: LaunchProps) {
     isLoading: isLoadingProjects,
     revalidate: revalidateProjects,
   } = usePromise(getProjects, [undefined], {
-    onData: () => {
+    onData: (data) => {
+      if (!data) {
+        revalidateProjects()
+      }
       if (props.launchContext?.projectId) {
         setValue('projectId', props.launchContext.projectId)
       }
@@ -86,7 +89,7 @@ export default function Command(props: LaunchProps) {
       }
     },
     onError: () => {
-      revalidateProjects().then()
+      revalidateProjects()
     },
   })
   const {
@@ -94,7 +97,10 @@ export default function Command(props: LaunchProps) {
     isLoading: isLoadingTasks,
     revalidate: revalidateTasks,
   } = usePromise(getTasks, [undefined], {
-    onData: () => {
+    onData: (data) => {
+      if (!data) {
+        revalidateTasks()
+      }
       if (props.launchContext?.taskId) {
         setValue('taskId', props.launchContext.taskId)
       }
@@ -103,7 +109,7 @@ export default function Command(props: LaunchProps) {
       }
     },
     onError: () => {
-      revalidateTasks().then()
+      revalidateTasks()
     },
   })
   const {
@@ -111,7 +117,10 @@ export default function Command(props: LaunchProps) {
     isLoading: isLoadingTypesOwWork,
     revalidate: revalidateTypesOfWork,
   } = usePromise(getTypesOfWork, [], {
-    onData: () => {
+    onData: (data) => {
+      if (!data) {
+        revalidateTypesOfWork()
+      }
       if (props.launchContext?.typeOfWorkId) {
         setValue('typeOfWorkId', props.launchContext.typeOfWorkId)
       }
@@ -120,7 +129,7 @@ export default function Command(props: LaunchProps) {
       }
     },
     onError: () => {
-      revalidateTypesOfWork().then()
+      revalidateTypesOfWork()
     },
   })
   const { pop } = useNavigation()
