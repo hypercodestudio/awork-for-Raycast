@@ -65,9 +65,18 @@ export const getTasks = async (searchText: string | undefined) => {
   if (!token) {
     return
   }
+  let isId
+  if (searchText) {
+    isId =
+      searchText.split('-').length == 5 &&
+      searchText.charAt(8) == '-' &&
+      searchText.charAt(13) == '-' &&
+      searchText.charAt(18) == '-' &&
+      searchText.charAt(23) == '-'
+  }
   return fetch(
     new URL(
-      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))` : ''}`,
+      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name)${isId ? ` or id eq guid'${searchText}'` : ''})` : ''}`,
     ),
     getRequestOptions(token),
   )

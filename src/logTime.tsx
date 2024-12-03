@@ -65,7 +65,7 @@ const logTime = async (values: FormValues, tasks: task[] | undefined) => {
     redirect: 'follow',
   }).catch((e: Error) => {
     showToast({ style: Toast.Style.Failure, title: e.name, message: e.message })
-    console.log(e)
+    console.error(e)
     return
   })
   await showHUD('Successfully logged time')

@@ -84,7 +84,7 @@ export default function Command() {
     revalidate: updateSearch,
   } = usePromise(getProjects, [searchText], {
     onData: (data) => {
-      if (!data) {
+      if (!data && !searchText) {
         updateSearch()
       }
     },

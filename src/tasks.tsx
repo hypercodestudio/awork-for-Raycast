@@ -75,7 +75,7 @@ export default function Command(props: LaunchProps) {
     revalidate: updateTasks,
   } = usePromise(getTasks, [searchText], {
     onData: (data) => {
-      if (!data) {
+      if (!data && !searchText) {
         updateTasks()
       }
     },
