@@ -76,7 +76,7 @@ export const getTasks = async (searchText: string | undefined) => {
   }
   return fetch(
     new URL(
-      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name)${isId ? ` or id eq guid'${searchText}'` : ''})` : ''}`,
+      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? (isId ? ` and id eq guid'${searchText}'` : ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`) : ''}`,
     ),
     getRequestOptions(token),
   )
