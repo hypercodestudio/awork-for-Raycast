@@ -9,7 +9,7 @@ import {
   Toast,
   useNavigation,
 } from '@raycast/api'
-import { FormValidation, useForm, usePromise } from '@raycast/utils'
+import { FormValidation, useForm, useCachedPromise } from '@raycast/utils'
 import fetch from 'node-fetch'
 import {
   getProjects,
@@ -76,7 +76,7 @@ export default function Command(props: LaunchProps) {
     data: projects,
     isLoading: isLoadingProjects,
     revalidate: revalidateProjects,
-  } = usePromise(getProjects, [undefined], {
+  } = useCachedPromise(getProjects, [undefined], {
     onData: (data) => {
       if (!data) {
         revalidateProjects()
@@ -96,7 +96,7 @@ export default function Command(props: LaunchProps) {
     data: tasks,
     isLoading: isLoadingTasks,
     revalidate: revalidateTasks,
-  } = usePromise(getTasks, [undefined], {
+  } = useCachedPromise(getTasks, [undefined], {
     onData: (data) => {
       if (!data) {
         revalidateTasks()
@@ -116,7 +116,7 @@ export default function Command(props: LaunchProps) {
     data: typesOfWork,
     isLoading: isLoadingTypesOwWork,
     revalidate: revalidateTypesOfWork,
-  } = usePromise(getTypesOfWork, [], {
+  } = useCachedPromise(getTypesOfWork, [], {
     onData: (data) => {
       if (!data) {
         revalidateTypesOfWork()

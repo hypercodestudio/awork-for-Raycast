@@ -8,7 +8,7 @@ import {
   List,
   LocalStorage,
 } from '@raycast/api'
-import { usePromise } from '@raycast/utils'
+import { useCachedPromise } from '@raycast/utils'
 import { useState } from 'react'
 import { getProjects, getTasks, task } from './composables/FetchData'
 
@@ -17,7 +17,7 @@ const Actions = (props: {
   projectId: string
   typeOfWorkId: string | undefined
 }) => {
-  const { data: BaseUrl } = usePromise(() =>
+  const { data: BaseUrl } = useCachedPromise(() =>
     LocalStorage.getItem<string>('URL'),
   )
 
@@ -73,7 +73,7 @@ export default function Command(props: LaunchProps) {
     data: tasks,
     isLoading: isLoadingTasks,
     revalidate: updateTasks,
-  } = usePromise(getTasks, [searchText], {
+  } = useCachedPromise(getTasks, [searchText], {
     onData: (data) => {
       if (!data && !searchText) {
         updateTasks()
@@ -84,7 +84,7 @@ export default function Command(props: LaunchProps) {
     data: projects,
     isLoading: iaLoadingProjects,
     revalidate: updateProjects,
-  } = usePromise(getProjects, [undefined], {
+  } = useCachedPromise(getProjects, [undefined], {
     onData: (data) => {
       if (!data) {
         updateProjects()
