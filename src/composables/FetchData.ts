@@ -65,18 +65,21 @@ export const getTasks = async (searchText: string | undefined) => {
   if (!token) {
     return
   }
-  let isId
+  let filter = ''
   if (searchText) {
-    isId =
-      searchText.split('-').length == 5 &&
-      searchText.charAt(8) == '-' &&
-      searchText.charAt(13) == '-' &&
-      searchText.charAt(18) == '-' &&
-      searchText.charAt(23) == '-'
+    if (
+      searchText.match(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      )
+    ) {
+      filter = ` and id eq guid'${searchText}'`
+    } else {
+      filter = ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`
+    }
   }
   return fetch(
     new URL(
-      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${searchText ? (isId ? ` and id eq guid'${searchText}'` : ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`) : ''}`,
+      `${baseURI}/me/projecttasks?filterby=taskstatus/type ne 'done'${filter}`,
     ),
     getRequestOptions(token),
   )
