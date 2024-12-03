@@ -1,4 +1,7 @@
-import { validateDuration, convertDurationsToSeconds } from '../src/composables/ValidateDuration'
+import {
+  convertDurationsToSeconds,
+  validateDuration,
+} from '../src/composables/ValidateDuration'
 
 describe('validateDuration', () => {
   it('should reject undefined', () => {
@@ -57,21 +60,21 @@ describe('validateDuration', () => {
   it('should accept x,xxh', () => {
     expect(validateDuration('0,1')).toBeUndefined()
     expect(validateDuration('0,5')).toBeUndefined()
+    expect(validateDuration(' ,5')).toBeUndefined()
     expect(validateDuration('1,0')).toBeUndefined()
     expect(validateDuration('1,5')).toBeUndefined()
     expect(validateDuration('0.1')).toBeUndefined()
     expect(validateDuration('0.5')).toBeUndefined()
+    expect(validateDuration(' .7')).toBeUndefined()
     expect(validateDuration('1.0')).toBeUndefined()
     expect(validateDuration('1.5')).toBeUndefined()
   })
   it('should reject invalid x,xxh', () => {
     expect(validateDuration(',')).toBe('Please enter valid duration')
     expect(validateDuration('1,')).toBe('Please enter valid duration')
-    expect(validateDuration(',5')).toBe('Please enter valid duration')
     expect(validateDuration('0,0')).toBe('Please enter valid duration')
     expect(validateDuration('.')).toBe('Please enter valid duration')
     expect(validateDuration('2.')).toBe('Please enter valid duration')
-    expect(validateDuration('.7')).toBe('Please enter valid duration')
     expect(validateDuration('0.0')).toBe('Please enter valid duration')
   })
 })
@@ -100,11 +103,23 @@ describe('convertDurationsToSeconds', () => {
   it('should convert x,xxh to seconds', () => {
     expect(convertDurationsToSeconds('0,5')).toBeCloseTo(1800)
     expect(convertDurationsToSeconds('0,05')).toBeCloseTo(180)
+    expect(convertDurationsToSeconds(',75')).toBeCloseTo(2700)
     expect(convertDurationsToSeconds('3,0')).toBeCloseTo(10800)
     expect(convertDurationsToSeconds('5,5')).toBeCloseTo(19800)
     expect(convertDurationsToSeconds('0.5')).toBeCloseTo(1800)
     expect(convertDurationsToSeconds('0.05')).toBeCloseTo(180)
+    expect(convertDurationsToSeconds('.75')).toBeCloseTo(2700)
     expect(convertDurationsToSeconds('3.0')).toBeCloseTo(10800)
     expect(convertDurationsToSeconds('5.5')).toBeCloseTo(19800)
+    expect(convertDurationsToSeconds('0,5h')).toBeCloseTo(1800)
+    expect(convertDurationsToSeconds('0,05h')).toBeCloseTo(180)
+    expect(convertDurationsToSeconds(',75h')).toBeCloseTo(2700)
+    expect(convertDurationsToSeconds('3,0h')).toBeCloseTo(10800)
+    expect(convertDurationsToSeconds('5,5h')).toBeCloseTo(19800)
+    expect(convertDurationsToSeconds('0.5h')).toBeCloseTo(1800)
+    expect(convertDurationsToSeconds('0.05h')).toBeCloseTo(180)
+    expect(convertDurationsToSeconds('.75h')).toBeCloseTo(2700)
+    expect(convertDurationsToSeconds('3.0h')).toBeCloseTo(10800)
+    expect(convertDurationsToSeconds('5.5h')).toBeCloseTo(19800)
   })
 })
