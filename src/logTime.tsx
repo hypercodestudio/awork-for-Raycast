@@ -21,7 +21,11 @@ import {
   convertDurationsToSeconds,
   validateDuration,
 } from './composables/ValidateDuration'
-import { baseURI, getToken } from './composables/WebClient'
+import {
+  authorizationInProgress,
+  baseURI,
+  getToken,
+} from './composables/WebClient'
 
 interface FormValues {
   note: string
@@ -34,10 +38,13 @@ interface FormValues {
   isBillable: boolean
 }
 
-const logTime = async (values: FormValues, tasks: task[] | undefined) => {
+const logTime = async (values: FormValues, tasks: task[] | string) => {
   const token = await getToken()
   values.date = values.date ? values.date : new Date()
-  const task = tasks!.filter((value) => value.id === values.taskId)[0]
+  if (!Array.isArray(tasks)) {
+    return
+  }
+  const task = tasks.filter((value) => value.id === values.taskId)[0]
   const body = JSON.stringify({
     note: values.note,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -78,7 +85,12 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateProjects,
   } = useCachedPromise(getProjects, [undefined], {
     onData: (data) => {
-      if (!data) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        showToast({ title: 'Reloading projects' })
         revalidateProjects()
       }
       if (props.launchContext?.projectId) {
@@ -98,7 +110,12 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateTasks,
   } = useCachedPromise(getTasks, [undefined], {
     onData: (data) => {
-      if (!data) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        showToast({ title: 'Reloading tasks' })
         revalidateTasks()
       }
       if (props.launchContext?.taskId) {
@@ -118,7 +135,12 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateTypesOfWork,
   } = useCachedPromise(getTypesOfWork, [], {
     onData: (data) => {
-      if (!data) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        showToast({ title: 'Reloading typesOfWork' })
         revalidateTypesOfWork()
       }
       if (props.launchContext?.typeOfWorkId) {
@@ -137,8 +159,16 @@ export default function Command(props: LaunchProps) {
   const { handleSubmit, itemProps, setValidationError, setValue, values } =
     useForm<FormValues>({
       onSubmit: async (values) => {
-        await logTime(values, tasks)
-        pop()
+        if (Array.isArray(tasks)) {
+          await logTime(values, tasks)
+          pop()
+        } else {
+          showToast({
+            title: 'Failed to log time',
+            message: `Expected tasks to be an array, but found ${typeof tasks}`,
+            style: Toast.Style.Failure,
+          })
+        }
       },
       initialValues: {
         date: new Date(),
@@ -188,9 +218,9 @@ export default function Command(props: LaunchProps) {
         {...itemProps.projectId}
         onChange={(projectId) => {
           setValidationError('projectId', undefined)
-          if (projectId) {
+          if (projectId && Array.isArray(projects)) {
             setValue('projectId', projectId)
-            const project = projects?.filter(
+            const project = projects.filter(
               (value) => value.id === projectId,
             )[0]
             if (typeof project?.isBillableByDefault === 'boolean') {
@@ -214,9 +244,9 @@ export default function Command(props: LaunchProps) {
         title={'Task'}
         {...itemProps.taskId}
         onChange={(taskId) => {
-          if (taskId) {
+          if (taskId && Array.isArray(tasks)) {
             setValue('taskId', taskId)
-            const task = tasks?.filter((value) => taskId === value.id)[0]
+            const task = tasks.filter((value) => taskId === value.id)[0]
             setValue('projectId', task?.projectId || '')
             setValidationError('projectId', undefined)
             if (task?.typeOfWorkId) {

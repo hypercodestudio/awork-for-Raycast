@@ -11,6 +11,7 @@ import {
 import { useCachedPromise } from '@raycast/utils'
 import { useState } from 'react'
 import { getProjects, getTasks, task } from './composables/FetchData'
+import { authorizationInProgress } from './composables/WebClient'
 
 const Actions = (props: {
   taskId: string
@@ -75,7 +76,12 @@ export default function Command(props: LaunchProps) {
     revalidate: updateTasks,
   } = useCachedPromise(getTasks, [searchText], {
     onData: (data) => {
-      if (!data && !searchText) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        console.log('Reloading tasks')
         updateTasks()
       }
     },
@@ -86,7 +92,12 @@ export default function Command(props: LaunchProps) {
     revalidate: updateProjects,
   } = useCachedPromise(getProjects, [undefined], {
     onData: (data) => {
-      if (!data) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        console.log('Reloading projects')
         updateProjects()
       }
       if (props.launchContext?.projectId) {

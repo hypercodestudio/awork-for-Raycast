@@ -38,7 +38,7 @@ const getRequestOptions = (token: string) => ({
 export const getProjects = async (searchText: string | undefined) => {
   const token = await getToken()
   if (!token) {
-    return
+    return 'noToken'
   }
   return fetch(
     new URL(
@@ -56,14 +56,14 @@ export const getProjects = async (searchText: string | undefined) => {
           e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
-      return undefined
+      return 'error'
     })
 }
 
 export const getTasks = async (searchText: string | undefined) => {
   const token = await getToken()
   if (!token) {
-    return
+    return 'noToken'
   }
   let filter = ''
   if (searchText) {
@@ -93,14 +93,14 @@ export const getTasks = async (searchText: string | undefined) => {
           e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
-      return undefined
+      return 'error'
     })
 }
 
 export const getTypesOfWork = async () => {
   const token = await getToken()
   if (!token) {
-    return
+    return 'noToken'
   }
   return fetch(`${baseURI}/typeofwork?OrderBy=name`, getRequestOptions(token))
     .then((response) => response.text())
@@ -113,6 +113,6 @@ export const getTypesOfWork = async () => {
           e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
       })
       console.error(e)
-      return undefined
+      return 'error'
     })
 }

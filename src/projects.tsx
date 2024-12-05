@@ -10,6 +10,7 @@ import {
 import { useCachedPromise } from '@raycast/utils'
 import { useState } from 'react'
 import { getProjects, project } from './composables/FetchData'
+import { authorizationInProgress } from './composables/WebClient'
 
 const Actions = (props: { projectID: string; isBillable: boolean }) => {
   const { data: BaseUrl } = useCachedPromise(() =>
@@ -84,7 +85,12 @@ export default function Command() {
     revalidate: updateSearch,
   } = useCachedPromise(getProjects, [searchText], {
     onData: (data) => {
-      if (!data && !searchText) {
+      if (
+        !Array.isArray(data) &&
+        data !== 'noToken' &&
+        !authorizationInProgress
+      ) {
+        console.log('Reloading projects')
         updateSearch()
       }
     },
