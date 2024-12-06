@@ -83,7 +83,7 @@ export default function Command(props: LaunchProps) {
     data: projects,
     isLoading: isLoadingProjects,
     revalidate: revalidateProjects,
-  } = useCachedPromise(getProjects, [undefined], {
+  } = useCachedPromise(getProjects, ['', 1000], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&
@@ -108,7 +108,7 @@ export default function Command(props: LaunchProps) {
     data: tasks,
     isLoading: isLoadingTasks,
     revalidate: revalidateTasks,
-  } = useCachedPromise(getTasks, [undefined], {
+  } = useCachedPromise(getTasks, ['', 1000], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&

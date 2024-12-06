@@ -78,12 +78,13 @@ const ProjectItem = (props: { project: project }) => {
 }
 
 export default function Command() {
-  const [searchText, setSearchText] = useState<string | undefined>(undefined)
+  const [searchText, setSearchText] = useState<string>('')
   const {
     data: projects,
     isLoading,
+    pagination,
     revalidate: updateSearch,
-  } = useCachedPromise(getProjects, [searchText], {
+  } = useCachedPromise(getProjects, [searchText, 100], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&
@@ -99,11 +100,9 @@ export default function Command() {
   return (
     <List
       isLoading={isLoading}
+      pagination={pagination}
       throttle
-      onSearchTextChange={(inputText) => {
-        setSearchText(inputText.length > 0 ? inputText : undefined)
-        updateSearch()
-      }}
+      onSearchTextChange={setSearchText}
     >
       {projects &&
         Array.isArray(projects) &&

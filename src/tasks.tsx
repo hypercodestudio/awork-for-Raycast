@@ -69,12 +69,13 @@ const TaskItem = (props: { task: task }) => {
 }
 
 export default function Command(props: LaunchProps) {
-  const [searchText, setSearchText] = useState<string | undefined>(undefined)
+  const [searchText, setSearchText] = useState<string>('')
   const {
     data: tasks,
+    pagination,
     isLoading: isLoadingTasks,
     revalidate: updateTasks,
-  } = useCachedPromise(getTasks, [searchText], {
+  } = useCachedPromise(getTasks, [searchText, 100], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&
@@ -90,7 +91,7 @@ export default function Command(props: LaunchProps) {
     data: projects,
     isLoading: iaLoadingProjects,
     revalidate: updateProjects,
-  } = useCachedPromise(getProjects, [undefined], {
+  } = useCachedPromise(getProjects, ['', 1000], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&
@@ -111,10 +112,8 @@ export default function Command(props: LaunchProps) {
     <List
       isLoading={isLoadingTasks}
       throttle
-      onSearchTextChange={(inputText) => {
-        setSearchText(inputText.length > 0 ? inputText : undefined)
-        updateTasks()
-      }}
+      pagination={pagination}
+      onSearchTextChange={setSearchText}
       searchBarAccessory={
         <List.Dropdown
           isLoading={iaLoadingProjects}
