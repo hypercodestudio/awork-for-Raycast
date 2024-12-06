@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "awork",
   "title": "awork",
-  "description": "",
+  "description": "Log time, search for tasks and projects",
   "icon": "icon.png",
   "author": "malte_18",
   "categories": [
@@ -28,7 +28,7 @@
       "name": "logTime",
       "title": "Log Time",
       "subtitle": "awork",
-      "description": "Book time on a project or task",
+      "description": "Log time on a project or task",
       "mode": "view"
     }
   ],
