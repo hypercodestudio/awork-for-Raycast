@@ -12,7 +12,6 @@ export interface project {
   name: string
   isBillableByDefault: boolean
   company?: company
-  page?: string
 }
 
 export interface task {
