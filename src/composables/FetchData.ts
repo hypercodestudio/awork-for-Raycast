@@ -12,6 +12,7 @@ export interface project {
   name: string
   isBillableByDefault: boolean
   company?: company
+  page?: string
 }
 
 export interface task {
@@ -59,6 +60,40 @@ export const getProjects = async (searchText: string | undefined) => {
       return 'error'
     })
 }
+export const getProjects =
+  (searchText: string, pageSize: number) =>
+  async (options: { page: number }) => {
+    const token = await getToken()
+    if (!token) {
+      return { data: [], hasMore: false }
+    }
+    return fetch(
+      new URL(
+        `${baseURI}/projects?page=${options.page + 1}&pageSize=${pageSize}${searchText ? `&filterby=substringof('${searchText}',name)` : ''}`,
+      ),
+      getRequestOptions(token),
+    )
+      .then((response) => {
+        return { body: response.text(), headers: response.headers }
+      })
+      .then(async (result) => {
+        return {
+          data: <Array<project>>JSON.parse(await result.body),
+          hasMore:
+            Number(result.headers.get('aw-totalitems')) > 2 * options.page + 1,
+        }
+      })
+      .catch((e: Error) => {
+        showToast({
+          style: Toast.Style.Failure,
+          title: e.name === 'FetchError' ? 'Couldn´t load Projects' : e.name,
+          message:
+            e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
+        })
+        console.error(e)
+        return { data: [], hasMore: false }
+      })
+  }
 
 export const getTasks = async (searchText: string | undefined) => {
   const token = await getToken()
@@ -96,6 +131,51 @@ export const getTasks = async (searchText: string | undefined) => {
       return 'error'
     })
 }
+export const getTasks =
+  (searchText: string, pageSize: number) =>
+  async (options: { page: number }) => {
+    const token = await getToken()
+    if (!token) {
+      return { data: [], hasMore: false }
+    }
+    let filter = ''
+    if (searchText) {
+      if (
+        searchText.match(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        )
+      ) {
+        filter = ` and id eq guid'${searchText}'`
+      } else {
+        filter = ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`
+      }
+    }
+    return fetch(
+      new URL(
+        `${baseURI}/me/projecttasks?page=${options.page + 1}&pageSize=${pageSize}&filterby=taskstatus/type ne 'done'${filter}`,
+      ),
+      getRequestOptions(token),
+    )
+      .then((response) => ({
+        body: response.text(),
+        headers: response.headers,
+      }))
+      .then(async (result) => ({
+        data: <Array<task>>JSON.parse(await result.body),
+        hasMore:
+          Number(result.headers.get('aw-totalitems')) > 2 * options.page + 1,
+      }))
+      .catch((e: Error) => {
+        showToast({
+          style: Toast.Style.Failure,
+          title: e.name === 'FetchError' ? 'Couldn´t load Tasks' : e.name,
+          message:
+            e.name === 'FetchError' ? e.name + ': ' + e.message : e.message,
+        })
+        console.error(e)
+        return { data: [], hasMore: false }
+      })
+  }
 
 export const getTypesOfWork = async () => {
   const token = await getToken()
