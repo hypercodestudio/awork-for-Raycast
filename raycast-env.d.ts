@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** Client ID - Enter the Client Id of your workspace */
+  /** Client ID - Enter the Client ID of your workspace */
   "clientId": string,
   /** Client Secret - Enter the Client Secret of your workspace */
   "clientSecret": string
