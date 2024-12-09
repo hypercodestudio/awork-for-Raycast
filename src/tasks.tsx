@@ -70,12 +70,13 @@ const TaskItem = (props: { task: task }) => {
 
 export default function Command(props: LaunchProps) {
   const [searchText, setSearchText] = useState<string>('')
+  const [projectId, setProjectId] = useState<string>('')
   const {
     data: tasks,
     pagination,
     isLoading: isLoadingTasks,
     revalidate: updateTasks,
-  } = useCachedPromise(getTasks, [searchText, 100], {
+  } = useCachedPromise(getTasks, [searchText, 100, projectId], {
     onData: (data) => {
       if (
         !Array.isArray(data) &&
@@ -106,7 +107,6 @@ export default function Command(props: LaunchProps) {
       }
     },
   })
-  const [projectId, setProjectId] = useState<string>('')
 
   return (
     <List

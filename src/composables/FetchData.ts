@@ -71,28 +71,32 @@ export const getProjects =
   }
 
 export const getTasks =
-  (searchText: string, pageSize: number) =>
+  (searchText: string, pageSize: number, projectId?: string) =>
   async (options: { page: number }) => {
     const token = await getToken()
     if (!token) {
       return { data: [], hasMore: false }
     }
-    let filter = ''
+    const route = projectId
+      ? `projects/${projectId}/projecttasks`
+      : 'me/projecttasks'
+    const pagination = `page=${options.page + 1}&pageSize=${pageSize}`
+    let filter = "filterby=taskstatus/type ne 'done'"
     if (searchText) {
       if (
         searchText.match(
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
         )
       ) {
-        filter = ` and id eq guid'${searchText}'`
+        filter = filter.concat(` and id eq guid'${searchText}'`)
       } else {
-        filter = ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`
+        filter = filter.concat(
+          ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`,
+        )
       }
     }
     return fetch(
-      new URL(
-        `${baseURI}/me/projecttasks?page=${options.page + 1}&pageSize=${pageSize}&filterby=taskstatus/type ne 'done'${filter}`,
-      ),
+      new URL(`${baseURI}/${route}?${pagination}&${filter}`),
       getRequestOptions(token),
     )
       .then((response) => ({

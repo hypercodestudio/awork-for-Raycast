@@ -187,7 +187,7 @@ export default function Command(props: LaunchProps) {
         duration: validateDuration,
         startTime: (value) => {
           if (value) {
-            if (value.match(/^ *(([0-1]\d)|(2[0-3])):[0-5]\d *$/)) {
+            if (value.match(/^ *(([0-1]?\d)|(2[0-3])):[0-5]\d *$/)) {
               return
             } else if (value.match(/^ *now *$/i)) {
               return
