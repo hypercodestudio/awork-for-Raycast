@@ -22,7 +22,7 @@ After installing the extension from the Raycast store, you'll need to enter *cli
 
 ### Projects
 
-<img width="800" alt="Search Projects Command" src="./assets/awork-1.png" />
+<img width="800" alt="Search Projects Command" src="./metadata/awork-1.png" />
 
 Browse/search your projects by project or client name.
 
@@ -36,7 +36,7 @@ The following actions are available:
 
 ### Tasks
 
-<img width="800" alt="Search Tasks Command" src="./assets/awork-2.png" />
+<img width="800" alt="Search Tasks Command" src="./metadata/awork-2.png" />
 
 Browse/search your tasks and optionally filter them by project.
 
@@ -49,7 +49,7 @@ The following actions are available:
 
 ### Log Time
 
-<img width="800" alt="Log Time Command" src="./assets/awork-3.png" />
+<img width="800" alt="Log Time Command" src="./metadata/awork-3.png" />
 
 Log time for a task or project right in Raycast. Press `⌘⏎` to submit.
 
