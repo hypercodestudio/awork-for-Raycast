@@ -77,26 +77,25 @@ export const getTasks =
     if (!token) {
       return { data: [], hasMore: false }
     }
+
     const route = projectId
       ? `projects/${projectId}/projecttasks`
       : 'me/projecttasks'
     const pagination = `page=${options.page + 1}&pageSize=${pageSize}`
-    let filter = "filterby=taskstatus/type ne 'done'"
+    let filterBy = "filterby=taskstatus/type ne 'done'"
+
     if (searchText) {
-      if (
-        searchText.match(
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        )
-      ) {
-        filter = filter.concat(` and id eq guid'${searchText}'`)
+        const searchTextIsUuid = searchText.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+
+      if (searchTextIsUuid) {
+        filterBy = `${filterBy} and id eq guid'${searchText}'`
       } else {
-        filter = filter.concat(
-          ` and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`,
-        )
+        filterBy = `${filterBy} and (substringof('${searchText}',name) or substringof('${searchText}',project/name))`
       }
     }
+
     return fetch(
-      new URL(`${baseURI}/${route}?${pagination}&${filter}`),
+      new URL(`${baseURI}/${route}?${pagination}&${filterBy}`),
       getRequestOptions(token),
     )
       .then((response) => ({
