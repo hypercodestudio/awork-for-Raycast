@@ -85,7 +85,9 @@ export const getTasks =
     let filterBy = "filterby=taskstatus/type ne 'done'"
 
     if (searchText) {
-        const searchTextIsUuid = searchText.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+      const searchTextIsUuid = searchText.match(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      )
 
       if (searchTextIsUuid) {
         filterBy = `${filterBy} and id eq guid'${searchText}'`
