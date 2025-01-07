@@ -91,6 +91,7 @@ export default function Command() {
         data !== 'noToken' &&
         !authorizationInProgress
       ) {
+      if (data.length === 0 && !authorizationInProgress) {
         console.log('Reloading projects')
         updateSearch()
       }

@@ -55,7 +55,8 @@ export const getProjects =
         return {
           data: <Array<project>>JSON.parse(await result.body),
           hasMore:
-            Number(result.headers.get('aw-totalitems')) > 2 * options.page + 1,
+            Number(result.headers.get('aw-totalitems')) >
+            pageSize * (options.page + 1),
         }
       })
       .catch((e: Error) => {
@@ -107,7 +108,8 @@ export const getTasks =
       .then(async (result) => ({
         data: <Array<task>>JSON.parse(await result.body),
         hasMore:
-          Number(result.headers.get('aw-totalitems')) > 2 * options.page + 1,
+          Number(result.headers.get('aw-totalitems')) >
+          pageSize * (options.page + 1),
       }))
       .catch((e: Error) => {
         showToast({

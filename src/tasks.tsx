@@ -78,11 +78,7 @@ export default function Command(props: LaunchProps) {
     revalidate: updateTasks,
   } = useCachedPromise(getTasks, [searchText, 100, projectId], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
+      if (data.length === 0 && !authorizationInProgress) {
         console.log('Reloading tasks')
         updateTasks()
       }
@@ -94,11 +90,7 @@ export default function Command(props: LaunchProps) {
     revalidate: updateProjects,
   } = useCachedPromise(getProjects, ['', 1000], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
+      if (data.length === 0 && !authorizationInProgress) {
         console.log('Reloading projects')
         updateProjects()
       }

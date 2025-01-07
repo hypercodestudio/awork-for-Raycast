@@ -91,6 +91,7 @@ export default function Command(props: LaunchProps) {
         !authorizationInProgress
       ) {
         showToast({ title: 'Reloading projects' })
+      if (data.length === 0 && !authorizationInProgress) {
         revalidateProjects()
       }
       if (props.launchContext?.projectId) {
@@ -116,6 +117,7 @@ export default function Command(props: LaunchProps) {
         !authorizationInProgress
       ) {
         showToast({ title: 'Reloading tasks' })
+      if (data.length === 0 && !authorizationInProgress) {
         revalidateTasks()
       }
       if (props.launchContext?.taskId) {
