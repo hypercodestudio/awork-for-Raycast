@@ -85,12 +85,6 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateProjects,
   } = useCachedPromise(getProjects, ['', 1000], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
-        showToast({ title: 'Reloading projects' })
       if (data.length === 0 && !authorizationInProgress) {
         revalidateProjects()
       }
@@ -111,12 +105,6 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateTasks,
   } = useCachedPromise(getTasks, ['', 1000], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
-        showToast({ title: 'Reloading tasks' })
       if (data.length === 0 && !authorizationInProgress) {
         revalidateTasks()
       }

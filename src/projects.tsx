@@ -86,11 +86,7 @@ export default function Command() {
     revalidate: updateSearch,
   } = useCachedPromise(getProjects, [searchText, 100], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
+      console.log('Projects: ', data)
       if (data.length === 0 && !authorizationInProgress) {
         console.log('Reloading projects')
         updateSearch()
