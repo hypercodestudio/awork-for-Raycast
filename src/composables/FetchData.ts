@@ -1,6 +1,6 @@
 import { showToast, Toast } from '@raycast/api'
 import fetch from 'node-fetch'
-import { baseURI, getToken } from './WebClient'
+import { baseURI, getToken, refreshToken } from './WebClient'
 
 interface company {
   id: string
@@ -44,7 +44,7 @@ export const getProjects =
     }
     return fetch(
       new URL(
-        `${baseURI}/projects?page=${options.page + 1}&pageSize=${pageSize}${searchText ? `&filterby=substringof('${searchText}',name)` : ''}`,
+        `${baseURI}/projects?page=${options.page + 1}&pageSize=${pageSize}&orderby=updatedOn desc${searchText ? `&filterby=substringof('${searchText}',name)` : ''}`,
       ),
       getRequestOptions(token),
     )
@@ -52,8 +52,13 @@ export const getProjects =
         return { body: response.text(), headers: response.headers }
       })
       .then(async (result) => {
+        const data = await result.body
+        if (data.match(/token expired/i)) {
+          await refreshToken()
+          return { data: [], hasMore: false }
+        }
         return {
-          data: <Array<project>>JSON.parse(await result.body),
+          data: <Array<project>>JSON.parse(data),
           hasMore:
             Number(result.headers.get('aw-totalitems')) >
             pageSize * (options.page + 1),
@@ -105,12 +110,19 @@ export const getTasks =
         body: response.text(),
         headers: response.headers,
       }))
-      .then(async (result) => ({
-        data: <Array<task>>JSON.parse(await result.body),
-        hasMore:
-          Number(result.headers.get('aw-totalitems')) >
-          pageSize * (options.page + 1),
-      }))
+      .then(async (result) => {
+        const data = await result.body
+        if (data.match(/token expired/i)) {
+          await refreshToken()
+          return { data: [], hasMore: false }
+        }
+        return {
+          data: <Array<task>>JSON.parse(data),
+          hasMore:
+            Number(result.headers.get('aw-totalitems')) >
+            pageSize * (options.page + 1),
+        }
+      })
       .catch((e: Error) => {
         showToast({
           style: Toast.Style.Failure,
@@ -130,7 +142,13 @@ export const getTypesOfWork = async () => {
   }
   return fetch(`${baseURI}/typeofwork?OrderBy=name`, getRequestOptions(token))
     .then((response) => response.text())
-    .then((result) => <Array<typeOfWork>>JSON.parse(result))
+    .then(async (result) => {
+      if (result.match(/token expired/)) {
+        await refreshToken()
+        return 'Invalid Token'
+      }
+      return <Array<typeOfWork>>JSON.parse(result)
+    })
     .catch((e: Error) => {
       showToast({
         style: Toast.Style.Failure,

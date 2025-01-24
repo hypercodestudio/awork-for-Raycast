@@ -19,6 +19,7 @@ interface User {
 
 export const baseURI = 'https://api.awork.com/api/v1'
 export let authorizationInProgress = false
+export let revalidating = false
 
 const preferences = getPreferenceValues<PreferenceValues>()
 
@@ -38,7 +39,7 @@ const getRequestOptions = (body: URLSearchParams): RequestInit => ({
   redirect: 'follow',
 })
 
-export const authorizeClient = async () => {
+const authorizeClient = async () => {
   if (await client.getTokens()) {
     console.log('Already logged in!')
     return
@@ -81,15 +82,17 @@ export const authorizeClient = async () => {
 export const refreshToken = async () => {
   const tokens = await client.getTokens()
   if (!tokens) {
-    return await authorizeClient()
+    await authorizeClient()
+    return
   } else {
-    if (authorizationInProgress) {
+    if (revalidating) {
       return
     }
-    authorizationInProgress = true
+    revalidating = true
     if (!tokens.refreshToken) {
       return
     }
+    console.log('Refreshing token...')
 
     const body = new URLSearchParams()
     body.append('grant_type', 'refresh_token')
@@ -108,7 +111,7 @@ export const refreshToken = async () => {
       await getUserData()
     }
 
-    authorizationInProgress = false
+    revalidating = false
   }
 }
 
@@ -136,13 +139,16 @@ const getUserData = async () => {
 
 export const getToken = async () => {
   if (authorizationInProgress) {
+    console.log('Currently authorizing')
+    return
+  }
+  if (revalidating) {
+    console.log('Currently refreshing token')
     return
   }
   if (!(await client.getTokens())) {
+    console.log('Authorize Client')
     await authorizeClient()
-  }
-  if ((await client.getTokens())?.isExpired()) {
-    await refreshToken()
   }
   return (await client.getTokens())?.accessToken
 }

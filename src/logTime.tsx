@@ -85,8 +85,11 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateProjects,
   } = useCachedPromise(getProjects, ['', 1000], {
     onData: (data) => {
-      if (data.length === 0 && !authorizationInProgress) {
-        revalidateProjects()
+      if ((!data || data.length === 0) && !authorizationInProgress) {
+        setTimeout(() => {
+          console.log('Reloading projects')
+          revalidateProjects()
+        }, 500)
       }
       if (props.launchContext?.projectId) {
         setValue('projectId', props.launchContext.projectId)
@@ -105,8 +108,11 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateTasks,
   } = useCachedPromise(getTasks, ['', 1000], {
     onData: (data) => {
-      if (data.length === 0 && !authorizationInProgress) {
-        revalidateTasks()
+      if ((!data || data.length === 0) && !authorizationInProgress) {
+        setTimeout(() => {
+          console.log('Reloading tasks')
+          revalidateTasks()
+        }, 500)
       }
       if (props.launchContext?.taskId) {
         setValue('taskId', props.launchContext.taskId)
@@ -125,13 +131,11 @@ export default function Command(props: LaunchProps) {
     revalidate: revalidateTypesOfWork,
   } = useCachedPromise(getTypesOfWork, [], {
     onData: (data) => {
-      if (
-        !Array.isArray(data) &&
-        data !== 'noToken' &&
-        !authorizationInProgress
-      ) {
-        showToast({ title: 'Reloading typesOfWork' })
-        revalidateTypesOfWork()
+      if (!Array.isArray(data) && !authorizationInProgress) {
+        setTimeout(() => {
+          console.log('Reloading typesOfWork')
+          revalidateTypesOfWork()
+        }, 500)
       }
       if (props.launchContext?.typeOfWorkId) {
         setValue('typeOfWorkId', props.launchContext.typeOfWorkId)
