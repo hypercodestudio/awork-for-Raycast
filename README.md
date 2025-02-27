@@ -15,7 +15,7 @@ Please enter something like:
 
 Then copy/save the generated new client secret.
 
-After installing the extension from the Raycast store, you'll need to enter *client ID* and *client secret*. You will be prompted to login on an awork login page, which will then redirect you back to Raycast. That's it.
+After installing the extension from the Raycast store, you'll need to enter your *client ID* and *client secret*. You will be prompted to login on an awork login page, which will then redirect you back to Raycast. That's it.
 
 
 ## Commands
