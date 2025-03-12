@@ -4,6 +4,7 @@
   "title": "awork",
   "description": "Search for tasks & projects and log time in awork.",
   "icon": "icon.png",
+  "access": "public",
   "owner": "hypercode",
   "author": "hypercode-dev",
   "contributers": [
